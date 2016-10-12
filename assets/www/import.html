@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hangge.com</title>
+ 
+    <script src="http://cdn.zingchart.com/zingchart.min.js"></script>
+ 
+    <script>
+    var chartData = {
+        "type": "bar", 
+        "series": [    
+            {"values": [35, 42, 67, 89, 25, 34, 67],"text":"hangge"},
+            {"values": [28, 57, 43, 56, 78, 99, 67],"text":"tom"}
+        ],
+        "scale-x":{
+            "values":["周一","周二","周三","周四","周五","周六","周日"],
+        },
+        "title": {
+          "text":"运动统计"
+        },
+        "legend":{
+         
+        }
+    };
+ 
+    window.onload = function () {  
+        zingchart.render({ 
+            id: "chartDiv",    
+            height: 300,       
+            width: 500,        
+            data: chartData
+        });
+    };
+    </script>
+ 
+</head>
+<body>
+    <div id="chartDiv"></div>
+</body>
+</html>

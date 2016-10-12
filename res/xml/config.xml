@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <widget id="com.sun.androidapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+
+ <!--设置运行环境中的参数值  -->
+    <preference name="loglevel" value="DEBUG" />
+   <!-- 插件描述 -->
+    <feature name="Location">
+       <param name="android-package" value="com.cardpay.banksaler_rocket.GetLocationPlugin" />
+        <param name="onload" value="true" />
+    </feature>
+    <allow-intent href="market:*" />
+</widget>
