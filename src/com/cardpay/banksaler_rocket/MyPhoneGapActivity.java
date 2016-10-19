@@ -14,6 +14,7 @@ public class MyPhoneGapActivity extends DroidGap {
 		//加载程序
 		super.onCreate(savedInstanceState);
 		super.loadUrl("file:///android_asset/www/index.html");
+		 super.setIntegerProperty("loadUrlTimeoutValue",10000);
 		
 		//启动后台upload服务
 		intent = new Intent(getApplicationContext(),UploadService.class);

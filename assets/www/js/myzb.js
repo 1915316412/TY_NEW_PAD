@@ -29,11 +29,14 @@ function zbjjlb(){
 	"<th>证件类型</th>"+
 	"<th>证件号码</th>"+
 	"<th>手机</th>"+
-	"</tr>";   
+	"<th>是否可以抢单</th>"+
+	"</tr>";  
+	var qd;
 	var get = crud.dom.factory("GET");
 	get.doGet(wsLoginUrl,callbackInfor,"加载抢单列表信息失败！");
 //			if(obj.custInfo!=null){
 			function callbackInfor(json){
+			
 				var obj = $.evalJSON(json);
 			for(var i = 0;i<obj.list.length;i++){
 				if(obj.list[i].cardType=="0"){
@@ -48,6 +51,10 @@ function zbjjlb(){
 					obj.list[i].cardType="澳门身份证";
 				}else if(obj.list[i].cardType=="5"){
 					obj.list[i].cardType="台湾身份证";
+				} if(obj.list[i].createdBy==userId){
+					qd="<td><label class='label' style='background:#7a867f;'>否</label></td>"
+				}else{
+					qd="<td><label class='label' style='background:#B87333  '>是</label></td>";
 				}
 				tmp=tmp+"<tr onclick='check(this)'><td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.list[i].createdBy+"@"+
 				obj.list[i].applyQuota+"@"+obj.list[i].customerId+"@"+obj.list[i].id+
@@ -57,6 +64,7 @@ function zbjjlb(){
 				"<td>"+obj.list[i].cardType+"</td>"+
 				"<td>"+obj.list[i].cardId+"</td>"+
 				"<td>"+obj.list[i].telephone+"</td>"+
+				qd+
 				"</tr>"
 
 				if((i+1)%5==0){
