@@ -3562,7 +3562,7 @@ Geolocation.usePhoneGap = function() {
     // Set built-in geolocation methods to our own implementations
     // (Cannot replace entire geolocation, but can replace individual methods)
     navigator.geolocation.setLocation = navigator._geo.setLocation;
-//    navigator.geolocation.getCurrentPosition = navigator._geo.getCurrentPosition;
+    //navigator.geolocation.getCurrentPosition = navigator._geo.getCurrentPosition;
     navigator.geolocation.watchPosition = navigator._geo.watchPosition;
     navigator.geolocation.clearWatch = navigator._geo.clearWatch;
     navigator.geolocation.start = navigator._geo.start;

@@ -86,39 +86,55 @@ function khcx(objs){
 function khwhlb(){
 	window.scrollTo(0,0);//滚动条回到顶端	
 	var userId = window.sessionStorage.getItem("userId");
-	var userType = window.sessionStorage.getItem("userType");
-	var tmp ="";
-	var result={};
-	var page=1;
-	var j = 1;
+//	var userType = window.sessionStorage.getItem("userType");
+	var userType = 1;
+	var page = 1;
 	var obj;
+	var tmp="";
+	var j = 1;
+	var result={};
 	var head ="<tr>"+   
 	"<th></th>"+ 
-	"<th>序号</th>"+  
 	"<th>客户姓名</th>"+
 	"<th>证件号码</th>"+
 	"<th>产品名称</th>"+
-	"<th>客户经理</th>"+"</tr>";
+	"<th>客户经理</th>"+
+	"<th>当前维护状态</th>"+"</tr>"
+	var endResult='';
+	var endResult1='';
+	
 
-	var khwhurl="/ipad/product/getMaintenanceList.json"+"?userId="+userId+"&userType="+userType;
+	var khwhurl="/ipad/product/TygetMaintenanceList1.json";
 	$.ajax({
 		url:wsHost + khwhurl,
 		type: "GET",
 		dataType:'json',
+		data:{userId:userId,userType:userType},
 		success: function (json) {
 			obj = $.evalJSON(json);
 			for(var i = 0;i<obj.size;i++){
-				tmp=tmp+"<tr onclick='check(this)'>"+
-                "<td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.result[i].chineseName+"@"+
-                obj.result[i].productName+"@"+obj.result[i].cardId+
-                "@"+obj.result[i].customerId+"@"+obj.result[i].appId+"'"+"/>"+"</span></td>"+
-				"<td>"+i+"</td>"+
+				if(obj.result[i].endResult==null || obj.result[i].endResult==''){
+					endResult1='没有维护';
+					endResult="<td><label class='label' style='background:#7a867f;'>没有维护</label></td>"
+				}if(obj.result[i].endResult=='Nextmaintain' ){
+					endResult1='继续维护';
+					endResult="<td><label class='label' style='background:#8bcb54'>继续维护</label></td>"
+				}if(obj.result[i].endResult=='Maintaining'){
+					endResult1='正在维护';
+					endResult="<td><label class='label' style='background:#B87333  '>正在维护</label></td>"
+				}if(obj.result[i].endResult=='Complete'){
+					endResult1='维护完成';
+					endResult="<td><label class='label' style='background:#871F78 '>维护完成</label></td>"
+				}
+				tmp=tmp+"<tr onclick='check(this)'><td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.result[i].chineseName+"@"+
+				obj.result[i].cardId+"@"+obj.result[i].productName+"@"+obj.result[i].userName+"@"+obj.result[i].customerId+"@"+obj.result[i].appId+"@"+endResult1+"'/>"+"</span></td>"+  
 				"<td>"+obj.result[i].chineseName+"</td>"+
 				"<td>"+obj.result[i].cardId+"</td>"+
 				"<td>"+obj.result[i].productName+"</td>"+
 				"<td>"+obj.result[i].userName+"</td>"+
+				endResult+
 				"</tr>";
-				
+
 				if((i+1)%5==0){
 					result[j]=tmp;
 					j++;
@@ -126,6 +142,7 @@ function khwhlb(){
 				}
 			}
 			result[j]=tmp;
+			window.scrollTo(0,0);//滚动条回到顶端
 			$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='editUser()'/>客户维护-客户维护列表</div>"+  
 					"<div class='content'>"+
 					"<table id = 'whlb' class='cpTable' style='text-align:center;'>"+
@@ -142,7 +159,7 @@ function khwhlb(){
 			$("#mainPage").show();
 			$("#xyy").click(function(){
 				page=page+1;
-				if(obj[page]){
+				if(result[page]){
 					$("#whlb").html(head+result[page]);
 				}else{
 					alert("当前已经是最后一页");
@@ -151,7 +168,7 @@ function khwhlb(){
 			})
 			$("#syy").click(function(){
 				page=page-1;
-				if(obj[page]){
+				if(result[page]){
 					$("#whlb").html(head+result[page]);
 				}else{
 					alert("当前已经是第一页");
@@ -160,29 +177,31 @@ function khwhlb(){
 			})
 			$("#tjwhjh").click(function() {
 				if ($("input[type='radio']").is(':checked')) {
+					
 					var objs={};
 					var values =$('input[name="checkbox"]:checked').attr("value").split("@");
-					objs.chineseName = values[0];
-					objs.productName = values[1];
-					objs.getCardId = values[2];
-					objs.customerId = values[3];
-					objs.appId = values[4];
-					objs.currentlo="khwhlb()";
-					tjkhwhjh(objs);
+					if(values[6]=='没有维护'){
+						objs.chineseName = values[0];
+						objs.productName = values[2];
+						objs.getCardId = values[1];
+						objs.customerId = values[4];
+						objs.appId = values[5];
+						tjkhwhjh1(objs);
+					}else{
+						alert("对不起!!此客户已经在维护中");
+					}
 				}else{
 					alert("请选择一行");
 				}
 			})
 		}
 	})
-
-
 }
 //客户维护-添加客户维护计划
-function tjkhwhjh(objs){
-	var khwejhxzurl = "/ipad/custAppInfo/insertMaintenance.json";
+function tjkhwhjh1(objs){
+	var khwejhxzurl = "/ipad/custAppInfo/TyinsertMaintenance1.json";
 	window.scrollTo(0,0);//滚动条回到顶端
-	$("#mainPage").html("<div class='title'><img src='images/back.png' onclick = '"+objs.currentlo+"'/>客户维护-客户维护列表-添加客户维护计划</div>"+  
+	$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='khwhlb()'/>客户维护-客户维护列表-添加客户维护计划</div>"+  
 			"<div class='content'>"+
 			"<table class='cpTable' style='text-align:center;'>"+
 			"<tr>"+                             
@@ -219,7 +238,7 @@ function tjkhwhjh(objs){
 			"</tr>"+
 			"</table>"+
 			"<p><input type='button' class='btn btn-large btn-primary' value='保存并继续' id = 'save'/>" +
-			"<input type='button' class='btn btn-large btn-primary' value='返回' onclick = '"+objs.currentlo+"'/></p>"+
+			"<input type='button' class='btn btn-large btn-primary' value='返回' onclick = 'khwhlb()'/></p>"+
 	"</div>");
 	$(".right").hide();
 	$("#mainPage").show();

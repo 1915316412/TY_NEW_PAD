@@ -39,6 +39,7 @@ function mywdsy(){
 		/*"<p>授信权限：50万</p>"+*/
 //		"<p>放款总额：100万</p>"+
 		"</div>"+
+		//"<div class='box wdsy5' ><a href='gdmap.html'>定位</a></div>"+ 
 		"<div class='box wdsy1' onclick='mycpgl()'><img src='images/clkh.png'/><span>产品查询</span></div>"+
 		"<div class='box wdsy2' onclick='khjjxx();pie()'><img src='images/khjjxx.png'/><span>客户进件信息</span></div>"+
 		"<div class='box wdsy3' onclick='khyyzk()'><img src='images/khyyzk.png'/><span>客户运营状况</span></div>"+
@@ -1920,7 +1921,6 @@ function wzxx(){
 			dateType:'json',
 			type:'GET',
 			success:function (json){
-				alert(json);
 				var obj = $.evalJSON(json);
 				for(var i = 0;i<obj.size ; i++){
 				tmp=tmp+"<option value = '"+obj.result[i].id+"'>"+obj.result[i].displayName+"</option>"
@@ -1958,7 +1958,6 @@ function wzxx(){
 	 				userId:userid,
 	 			},
 	 			success:function (json){
-	 				alert(json);
 	 				var obj = $.evalJSON(json);
 	 				var map = new BMap.Map("allmap"); 
 						for(var i=0;i<obj.size;i++){
@@ -2065,8 +2064,7 @@ function getLocation(){
 	navigator.geolocation.getCurrentPosition(mapIt,locationError); 
 } 
 //定位成功时，执行的函数 
-function mapIt(){ 
-	alert('345677');
+function mapIt(position){  
 	lon = position.coords.longitude; 
 	lat = position.coords.latitude; 
 	
@@ -2126,7 +2124,6 @@ function locationError(error)
 	} 
 } 
 function showInformation(marker,updatetime,point,map){
-	alert(updatetime);
 	 var gc = new BMap.Geocoder(); 
 	 marker.addEventListener("click", function(){
 			 gc.getLocation(point, function(rs){ 
