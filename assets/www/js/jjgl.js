@@ -196,7 +196,44 @@ $("#mainPage").html("<div class='title'>" +
 			productInfo.chineseName = values[2];
 			allobj.cardId = values[1];
 			allobj.chineseName = values[2];
-			newUser1(productInfo);
+			var fxsxurl ="/ipad/NotifictionMessage/managerbrowse.json";
+			var fxsxurl1 ="/ipad/customer/selectIsBlackList.json?id="+productInfo.customerId;
+			var url = fxsxurl+"?userId="+window.sessionStorage.getItem("userId");
+			var custormerid="";
+			var custormerid1="";
+			$.ajax({
+				url:wsHost + url,
+				type: "GET",
+				dataType:'json',
+				async: false,
+				success: function (json) {
+					obj = $.evalJSON(json);
+					for(var i = 0;i<obj.size;i++){
+						if(productInfo.customerId==obj.result[i].customerId){
+							 custormerid=1;
+						}
+					}
+					if(custormerid!=1){
+						$.ajax({
+							url:wsHost + fxsxurl1,
+							type: "GET",
+							dataType:'json',
+							async: false,
+							success: function (json) {
+								obj = $.evalJSON(json);
+								if(obj.a>0){
+									custormerid1=1;
+								}
+							}})
+					}
+					if(custormerid==1){
+						alert("对不起,该客户时在风险客户名单里面,不能申请进件!!!!")
+					}else if(custormerid1==1){
+						alert("对不起,该客户时在黑名单里面,不能申请进件!!!!")
+					}else if(custormerid1!=1 & custormerid!=1){
+						newUser1(productInfo);
+					}
+					}})
 		}else{
 			alert("请选择一行");
 			}

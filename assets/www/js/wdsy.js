@@ -743,20 +743,20 @@ function wdzj(){
 //通知
 function tz(){
 	window.scrollTo(0,0);//滚动条回到顶端
-
 	var get = crud.dom.factory("GET");
 	wsNotifiyMessage ="/ipad/custAppInfo/notifiyMessageNum.json";
 	var url = wsNotifiyMessage+"?userId="+window.sessionStorage.getItem("userId");
 	get.doGet(url,initNotifiyMessageContentCallback,"加载通知信息失败！");
 	function initNotifiyMessageContentCallback(json){
 		var objs = $.evalJSON(json);
+		
 		//alert(json);
 		$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='mywdsy()'/>通知</div>"+  
 				"<div class='content'>" +
 				"<table class='cpTable' style='width:100%;height:85%;position:fixed;top:100px;bottom:0;text-align:center;'>"+
 				"<tr>"+                             
 				"<td style='width:33.3%;' onclick='sdhtz()'>" +
-				"<img src='images/sdh.png'/><br/><span class='tongzhi'>0</span><br/>" +
+				"<img src='images/sdh.png'/><br/><span class='tongzhi'>"+objs.pcount+"</span><br/>" +
 				"<span class='tz_message'>审贷会通知</span>" +
 				"</td>"+                           
 				"<td style='width:33.3%;' onclick='pxjh()'>" +
@@ -806,72 +806,119 @@ function tz(){
 }
 //通知-审贷会通知
 function sdhtz(){
+var userId = window.sessionStorage.getItem("userId");
+var tmp ="";
+var result={};
+var page=1;
+var j = 1;
+var obj;
+var head ="<tr>"+   
+"<th></th>"+ 
+"<th>产品名称</th>"+
+"<th>审贷节点</th>"+
+"<th>负责人</th>"+
+"</tr>";
+
+var khwhurl="/ipad/product/selectProductUser.json"+"?userId="+userId
+$.ajax({
+	url:wsHost + khwhurl,
+	type: "GET",
+	dataType:'json',
+	success: function (json) {
+		obj = $.evalJSON(json);
+		for(var i = 0;i<obj.size;i++){
+			tmp=tmp+"<tr onclick='check(this)'>"+
+			"<td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.result[i].displayName+"@"+obj.result[i].productName+
+			"@"+obj.result[i].node_name+"@"+obj.result[i].product_id+"'"+"/>"+"</span></td>"+
+			"<td>"+obj.result[i].productName+"</td>"+
+			"<td>"+obj.result[i].node_name+"</td>"+
+			"<td>"+obj.result[i].displayName+"</td>"+
+			"</tr>";
+		
+		if((i+1)%5==0){
+			result[j]=tmp;
+			j++;
+			tmp="";
+		}
+		}
+	result[j]=tmp;
+		
 	window.scrollTo(0,0);//滚动条回到顶端
 	$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='tz()'/>通知-审贷会通知</div>"+  
-			"<div class='content' style='margin-top:146px;'>" +
-			"<div class='rcap' onclick='show_sdhtz()'>" +
-			"<table>" +
-			"<tr>" +
-			"<td class='center' style='width:20%;'>2015-06-12 13:00<br/>~<br/>2015-06-12 14:00</td>"+
-			"<td style='width:40%;'>" +
-			"<p class='rcTitle'>王军忠进件002316审贷会</p>" +
-			"<p class='cyz'>参与者</p>" +
-			"<p class='cyzxm'>王旭、朱远炎、宋辰、谭文华</p>" +
-			"</td>"+
-			"<td style='width:35%;'>" +
-			"<p class='center'>江苏省常州市九州环宇505</p>" +
-			"</td>"+
-			"<td style='width:5%;'>" +
-			"<img src='images/right.png'/>" +
-			"</td>"+
-			"</tr>"+                            
+			"<div class='content'>"+
+			"<table id = 'whlb' class='cpTable' style='text-align:center;'>"+
+			head+result[page]+
 			"</table>"+
-			"</div>"+
-			"<div class='rcap' onclick='show_sdhtz()'>" +
-			"<table>" +
-			"<tr>" +
-			"<td class='center' style='width:20%;'>2015-06-13 13:00<br/>~<br/>2015-06-13 14:00</td>"+
-			"<td style='width:40%;'>" +
-			"<p class='rcTitle'>王军忠进件02356561审贷会</p>" +
-			"<p class='cyz'>参与者</p>" +
-			"<p class='cyzxm'>王旭、朱远炎</p>" +
-			"</td>"+
-			"<td style='width:35%;'>" +
-			"<p class='center'>江苏省常州市九州环宇505</p>" +
-			"</td>"+
-			"<td style='width:5%;'>" +
-			"<img src='images/right.png'/>" +
-			"</td>"+
-			"</tr>"+                            
-			"</table>"+
-			"</div>"+
-			/*"<table class='cpTable' style='text-align:center;'>"+
-                            "<tr>"+                       
-                                "<th></th>"+           
-                                "<th style='width:25%;'>审贷会时间</th>"+          
-                                "<th>审贷会地点</th>"+       
-                                "<th>审贷会进件提示</th>"+   
-                            "</tr>"+
-                            "<tr onclick='check(this)'>"+       
-                                "<td><span class='radio'><input type='radio'/></span></td>"+              
-                                "<td>2015-06-12</td>"+          
-                                "<td>综合部</td>"+          
-                                "<td></td>"+
-                            "</tr>"+
-                            "<tr onclick='check(this)'>"+       
-                                "<td><span class='radio'><input type='radio'/></span></td>"+              
-                                "<td>2015-06-15</td>"+          
-                                "<td>综合部</td>"+          
-                                "<td></td>"+
-                            "</tr>"+
-                        "</table>"+
-                        "<p>" +
-                            "<button class='success-button'><img src='images/yes.png'/> 确认</button>" +
-                            "<button class='error-button'><img src='images/no.png'/> 拒绝</button>" +
-                        "</p>" +*/
+
+			"<p>"+
+			"<input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
+			"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
+			"<input type='button' class='btn btn-large btn-primary' value='显示' id = 'sqsave'/>"+
 	"</div>");
 	$(".right").hide();
-	$("#mainPage").show();
+	$("#mainPage").show();  $("#xyy").click(function(){
+		page=page+1;
+		if(result[page]){
+			$("#whlb").html(head+result[page]);
+		}else{
+			alert("当前已经是最后一页");
+			page=page-1;
+		}
+	})
+	$("#syy").click(function(){
+		page=page-1; 
+		if(result[page]){
+			$("#whlb").html(head+result[page]);
+		}else{
+			alert("当前已经是第一页");
+			page = page+1;
+		}
+	})
+		$("#sqsave").click(function(){
+			if ($("input[type='radio']").is(':checked')) {
+				var objs={};
+				var values =$('input[name="checkbox"]:checked').attr("value").split("@");
+				objs.productId = values[3];
+				cxjj(objs);
+			}else{
+				alert("请选择一行");
+			}
+		})
+	}})
+}
+function cxjj(objs){
+	var productId=objs.productId;
+	var head ="<tr>"+   
+	"<th>节点序号</th>"+ 
+	"<th>产品名称</th>"+
+	"<th>审贷节点</th>"+
+	"<th>负责人</th>"+
+	"</tr>";
+	var tem;
+	var khwhurl="/ipad/product/selectAllProductUser.json"+"?productId="+productId
+	$.ajax({
+		url:wsHost + khwhurl,
+		type: "GET",
+		dataType:'json',
+		success: function (json) {
+			obj = $.evalJSON(json);
+			for(var i = 0;i<obj.size;i++){
+				tem=tem+"<tr><td>"+obj.result[i].seq_no+"</td>"+
+				"<td>"+obj.result[i].productName+"</td>"+
+				"<td>"+obj.result[i].node_name+"</td>"+
+				"<td>"+obj.result[i].displayName+"</td></tr>"
+			}
+			window.scrollTo(0,0);//滚动条回到顶端
+			$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='sdhtz()'/>通知-产品负责人显示</div>"+  
+					"<div class='content'>"+
+					"<table id = 'whlb' class='cpTable' style='text-align:center;'>"+
+					head+tem+
+					"</table>"+
+			"</div>");
+			$(".right").hide();
+			$("#mainPage").show(); 
+			
+		}})
 }
 function show_sdhtz(){
 	$("#text").html("<div class='display-div sdhtz'>"+

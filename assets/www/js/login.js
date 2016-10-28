@@ -56,7 +56,7 @@ function checkLoginCallback(json){
     session.setItem("userType",obj.result.user.userType);
     session.setItem("managerList",manggerList);
     //定时定位
-    //var location = window.setInterval(getLocations,1000*60*5);
+    var location = window.setInterval(getLocations,1000*60*5);
 
     //alert("getItem:"+session.getItem("id"));
     //alert(sssion.getItem("user_id"));

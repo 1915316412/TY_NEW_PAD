@@ -96,7 +96,45 @@ function sqryk(){
 					objs.id = values[2];
 					objs.productId = values[3];
 					objs.userId = window.sessionStorage.getItem("userId");
-					sq(objs);
+					var fxsxurl ="/ipad/NotifictionMessage/managerbrowse.json";
+					var fxsxurl1 ="/ipad/customer/selectIsBlackList.json?id="+objs.id ;
+					var url = fxsxurl+"?userId="+window.sessionStorage.getItem("userId");
+					var custormerid="";
+					var custormerid1="";
+					$.ajax({
+						url:wsHost + url,
+						type: "GET",
+						dataType:'json',
+						async: false,
+						success: function (json) {
+							obj = $.evalJSON(json);
+							for(var i = 0;i<obj.size;i++){
+								if(objs.id==obj.result[i].customerId){
+									 custormerid=1;
+								}
+							}
+							if(custormerid!=1){
+								$.ajax({
+									url:wsHost + fxsxurl1,
+									type: "GET",
+									dataType:'json',
+									async: false,
+									success: function (json) {
+										obj = $.evalJSON(json);
+										if(obj.a>0){
+											custormerid1=1;
+										}
+									}})
+							}
+							if(custormerid==1){
+								alert("对不起,该客户时在风险客户名单里面,不能申请!!!!")
+							}else if(custormerid1==1){
+								alert("对不起,该客户时在黑名单里面,不能申请!!!!")
+							}else if(custormerid1!=1 & custormerid!=1){
+								sq(objs);
+							}
+							}})
+					
 				}else{
 					alert("请选择一行");
 				}
@@ -104,8 +142,6 @@ function sqryk(){
 			
 		}})
 }
-var cs=0;
-var i=1;
 function sq(objs){
 	window.scrollTo(0,0);//滚动条回到顶端
 	$("#mainPage").html("<div class='title' id='back'><img src='images/back.png' onclick='sqryk()'/>荣耀卡申请</div>"+  
@@ -144,8 +180,6 @@ function sq(objs){
 	    	  tjsq(objs);
 	      })
 	      $("#sure").click(function(){
-	    	  cs=Number(cs)+Number(i);
-	    	  alert(Number(cs)+Number(i));
 	    	  var applicationId = null;
 	    	  var num= $('#qtyxzl tr').length;
 	    	  for(var i=0;i<num;i++){
