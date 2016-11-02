@@ -1250,7 +1250,7 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 							hyzk:hyzk,hjzk:hjzk,jycd:jycd,zgzs:zgzs,zc:zc,age:age,jkqk:jkqk,ggjl:ggjl,
 							zw:zw,grsr:grsr,zwsrb:zwsrb,syrk:syrk,tjr:tjr,khjlzgyx:khjlzgyx,khdysr:khdysr,cykh:cykh,zf:zf,jyed:jyed,pfdj:pfdj},
 						success: function (json) {
-							alert(json);
+						
 							obj = $.evalJSON(json);
 							if(obj.a>0){
 								alert('上传成功!');

@@ -783,10 +783,10 @@ function tz(){
 				"</td>"+ 
 				"</tr>"+
 				"<tr>"+                         
-//				"<td onclick='cskhtz()'>" +
-//				"<img src='images/cs.png'/><br/><span class='tongzhi'>0</span><br/>" +
-//				"<span class='tz_message'>催收客户通知</span>" +
-//				"</td>"+                    
+				"<td onclick='hmdtz()'>" +
+				"<img src='images/cs.png'/><br/><span class='tongzhi'>"+objs.blackcount+"</span><br/>" +
+				"<span class='tz_message'>黑名单客户通知</span>" +
+				"</td>"+                    
 				"<td id='kkkk'>" +
 				"<img src='images/khzlbg.png'/><br/><span class='tongzhi'>"+objs.ziliaobiangeng+"</span><br/>" +
 				"<span class='tz_message'>客户资料变更通知</span>" +
@@ -801,9 +801,105 @@ function tz(){
 	}
 	$(".right").hide();
 	$("#mainPage").show();
-
-
 }
+
+//通知-审贷会通知
+function hmdtz(){
+	var userId = window.sessionStorage.getItem("userId");
+	var tmp ="";
+	var result={};
+	var page=1;
+	var j = 1;
+	var obj;
+	var head ="<tr>"+   
+	"<th></th>"+ 
+	"<th>客户名称</th>"+
+	"<th>证件号码</th>"+
+	"<th>拉黑原因</th>"+
+	"<th>上报人</th>"+
+	"</tr>";
+
+	var khwhurl="/ipad/customer/custormerblacklist.json"+"?userId="+userId
+	$.ajax({
+		url:wsHost + khwhurl,
+		type: "GET",
+		dataType:'json',
+		success: function (json) {
+			obj = $.evalJSON(json);
+			for(var i = 0;i<obj.size;i++){
+				tmp=tmp+"<tr onclick='check(this)'>"+
+				"<td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.result[i].display_name+"@"+obj.result[i].card_id+
+				"@"+obj.result[i].reason+"@"+obj.result[i].chinese_name+"@"+obj.result[i].customer_id+"'"+"/>"+"</span></td>"+
+				"<td>"+obj.result[i].chinese_name+"</td>"+
+				"<td>"+obj.result[i].card_id+"</td>"+
+				"<td>"+obj.result[i].reason+"</td>"+
+				"<td>"+obj.result[i].display_name+"</td>"+
+				"</tr>";
+			
+			if((i+1)%5==0){
+				result[j]=tmp;
+				j++;
+				tmp="";
+			}
+			}
+		result[j]=tmp;
+			
+		window.scrollTo(0,0);//滚动条回到顶端
+		$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='tz()'/>通知-黑名单客户</div>"+  
+				"<div class='content'>"+
+				"<table id = 'whlb' class='cpTable' style='text-align:center;'>"+
+				head+result[page]+
+				"</table>"+
+
+				"<p>"+
+				"<input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
+				"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
+				"<input type='button' class='btn btn-large btn-primary' value='移除' id = 'deleteku'/>"+
+		"</div>");
+		$(".right").hide();
+		$("#mainPage").show();  $("#xyy").click(function(){
+			page=page+1;
+			if(result[page]){
+				$("#whlb").html(head+result[page]);
+			}else{
+				alert("当前已经是最后一页");
+				page=page-1;
+			}
+		})
+		$("#syy").click(function(){
+			page=page-1; 
+			if(result[page]){
+				$("#whlb").html(head+result[page]);
+			}else{
+				alert("当前已经是第一页");
+				page = page+1;
+			}
+		})
+			$("#deleteku").click(function(){
+				if ($("input[type='radio']").is(':checked')) {
+					var values =$('input[name="checkbox"]:checked').attr("value").split("@");
+					var khwhurl1="/ipad/customer/deleteByCoustorId.json";
+					$.ajax({
+						url:wsHost + khwhurl1,
+						type: "GET",
+						dataType:'json',
+						data:{userId:userId,customerId:values[4]},
+						success: function (json) {
+							obj = $.evalJSON(json);
+							if(obj.message=="移除成功"){
+								alert(obj.message);
+								hmdtz();
+							}else{
+								alert(obj.message);
+							}
+							
+						}})
+				}else{
+					alert("请选择一行");
+				}
+			})
+		}})
+	}
 //通知-审贷会通知
 function sdhtz(){
 var userId = window.sessionStorage.getItem("userId");

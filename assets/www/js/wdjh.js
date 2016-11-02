@@ -474,7 +474,6 @@ function sq(objs){
 	    		dataType:'json',
 	    		data:{productId:objs.productId,userId:objs.userId,customerId:objs.id},
 	    		success: function (json) {
-	    			alert(json);
 	    			obj = $.evalJSON(json);
 	    			alert(obj.message);
 	    			sqryk();
