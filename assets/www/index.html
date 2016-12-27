@@ -1,63 +1,82 @@
 <!-- Copyright (c) 2012 Mobile Developer Solutions -->
 <!DOCTYPE HTML>
-<html lang="zh-cn" >
+<html lang="zh-cn">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<!-- <meta name="viewport" content="target-densitydp=high-dpi,user-scalable=no">  -->
-    <meta http-equiv="Content-type" name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width"> 
-	<title>PAD</title> 	 	
-	<link rel="stylesheet" href="css/btn.css" /> 
-	<link rel="stylesheet" href="css/login.css" /> 	
-	<link rel="stylesheet" href="css/index.css" />	
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- <meta name="viewport" content="target-densitydp=high-dpi,user-scalable=no">  -->
+<meta http-equiv="Content-type" name="viewport"
+	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+<title>PAD</title>
+<link rel="stylesheet" href="css/btn.css" />
+<link rel="stylesheet" href="css/login.css" />
+<link rel="stylesheet" href="css/index.css" />
+<link rel="stylesheet" href="css/ImaLoding.css" />
 </head>
 <body>
 	<div id="login">
 		<div class='loginBox'>
-             <form class='login_form' action='index.html' method='post'>
-                 <img src='images/login.png'/>              
-                 <div class='login'>
-                     <h1>蜂巢w贷</h1>
-                     <input type='text' placeholder='用户名' id ="name" style="background-image:url('images/login1.png');"/>
-                     <input type='password' placeholder='密码' id ="password"  style="background-image:url('images/login2.png');"/>
-                     <!--错误信息提示--> 
-                     <span class='errorMessage'>
-                         <img src='images/error.png'/>&nbsp;用户名或密码错误！
-                     </span>
-                     <!--/错误信息提示--> 
-                     <input type='button' class='login_btn' value='登  录' onclick='dl()'>
-                 </div>
-             </form>
-         </div>
+		
+			<form class='login_form' action='index.html' method='post'>
+				<img src='images/login.png' />
+				<div class='login'>
+					<h1>蜂巢WE贷</h1>
+					<input type='text' placeholder='用户名' id="name" 
+						style="background-image: url('images/login1.png');" /> <input
+						type='password' placeholder='密码' id="password" 
+						style="background-image: url('images/login2.png');" />
+					<!--错误信息提示-->
+					<span class='errorMessage'> <img src='images/error.png' />&nbsp;用户名或密码错误！
+					</span>
+					<!--/错误信息提示-->
+					<input type='button' class='login_btn' value='登  录' onclick='dl()'>
+				</div>
+			</form>
+		</div>
 	</div>
-	<div class='top'><img src='images/tytop2.jpg'/><img class='Right' src='images/dc.png' onclick="show_dcts()" style='z-index:21'/></div>
-	<div class='bottom'><img src='images/bj.jpg'/></div> 	
-	<div id="page1" class="left" style="display:none;">		
-		<div onclick='showNav()' class="hidebt"><img src='images/show_list.png'/></div>		
+	<div class='top'>
+		<img src='images/tytop2.jpg' /><img class='Right' src='images/dc.png'
+			onclick="show_dcts()" style='z-index: 21' />
+	</div>
+	<div class='bottom'>
+		<img src='images/bj.jpg' />
+	</div>
+	<div id="page1" class="left" style="display: none;">
+		<div onclick='showNav()' class="hidebt">
+			<img src='images/show_list.png' />
+		</div>
 		<ul class="nav">
-			<li style="padding-bottom:0;"><img src="images/user/01.png" class="user"/><p id ="nimei"></p></li>
-			<li class="li" id="index" onclick="changeNav(this,1);mywdsy()"><img src="images/1.png"/><span>我的首页</span></li>
-			<li class="li" id="customer" onclick="changeNav(this,2);mykhgl()"><img src="images/2.png"/><span>客户管理</span></li>
-			<li class="li" id="customer" onclick="changeNav(this,3);myjjgl()"><img src="images/3.png"/><span>进件管理</span></li>
-			<li class="li" onclick="changeNav(this,4);mywdjh()"><img src="images/4.png"/><span>计划管理</span></li>
-			<li class="li" onclick="changeNav(this,5);myshsp()"><img src="images/5.png"/><span>审核审批</span></li>
+			<li style="padding-bottom: 0;"><img src="images/liginIma.jpg"
+				class="user" />
+			<p id="nimei"></p></li>
+			<li class="li" id="index" onclick="changeNav(this,1);mywdsy()"><img
+				src="images/1.png" /><span>我的首页</span></li>
+			<li class="li" id="customer" onclick="changeNav(this,2);mykhgl()"><img
+				src="images/2.png" /><span>客户管理</span></li>
+			<li class="li" id="customer" onclick="changeNav(this,3);myjjgl()"><img
+				src="images/3.png" /><span>进件管理</span></li>
+			<li class="li" onclick="changeNav(this,4);mywdjh()"><img
+				src="images/4.png" /><span>计划管理</span></li>
+			<li class="li" onclick="changeNav(this,5);myshsp()"><img
+				src="images/5.png" /><span>审核审批</span></li>
 		</ul>
 	</div>
-	<div id="mainPage" class="right" style="display:none;">
+	<div id="mainPage" class="right" style="display: none;">
 		<!-- 我的首页 wdsy.js / 产品查询cpgl.js-->
 		<!-- 客户管理 khgl.js / khwh.js-->
 		<!-- 进件管理 jjgl.js -->
-			<!-- 客户基本信息khjbxx.js -->
-			<!-- 客户经营信息khjyxx.js -->
-			<!-- 客户财务信息khcwxx.js 、khcwxx_syb.js 、khcwxx_zcfzb.js -->
-			<!-- 客户影像资料khyxzl.js -->
+		<!-- 客户基本信息khjbxx.js -->
+		<!-- 客户经营信息khjyxx.js -->
+		<!-- 客户财务信息khcwxx.js 、khcwxx_syb.js 、khcwxx_zcfzb.js -->
+		<!-- 客户影像资料khyxzl.js -->
 		<!-- 计划管理 wdjh.js -->
 		<!-- 审核审批 shsp.js -->
 	</div>
-	<div id="jjsp" class="right" style="display:none;">
+	<div id="jjsp" class="right" style="display: none;"></div>
+	<div id="ImaLoding" class="right" style="display: none;">
+</div>
 	</div>
-	<div id="text">	
-		
-	</div><!-- /text -->
+	<div id="text"></div>
+	<!-- /text -->
 </body>
 <script src="js/jquery-1.7.2.min.js" charset="utf-8"></script>
 <!-- 饼图 -->
@@ -68,6 +87,7 @@
 <script src="js/factory.js"></script>
 <script src="js/login.js"></script>
 <script src="js/user.js"></script>
+<script src="js/toIma.js"></script>
 <script src="js/cpgl.js"></script>
 <script src="js/khgl.js"></script>
 <script src="js/khjbxx.js"></script>
@@ -78,7 +98,8 @@
 <script src="js/khwh.js"></script>
 <script src="js/jjgl.js"></script>
 <script src="js/khyxzl.js"></script>
-<script src="js/wdsy.js" ></script>
+<script src="js/wdsy.js"></script>
+<script src="js/jb.js"></script>
 <script src="js/wdjh.js"></script>
 <script src="js/shsp.js"></script>
 <script src="js/syb.js"></script>
@@ -86,17 +107,22 @@
 <script src="js/xjlb.js"></script>
 <script src="js/jquery.json-2.3.js"></script>
 <script src="js/myzb.js"></script>
+<script src="js/loading.js"></script>
+<script src="js/ImaT.js"></script>
+<!-- <script src="js/MoreIma.js"></script> -->
 
 
-<script type="text/javascript" charset="utf-8" src="apis/phonegap-1.4.1.js"></script>
+
+<script type="text/javascript" charset="utf-8"
+	src="apis/phonegap-1.4.1.js"></script>
 <script type="text/javascript" src="js/CardPlugin.js"></script>
 <script type="text/javascript" src="js/ImagePlugin.js"></script>
 <script type="text/javascript" src="js/DBPlugin.js"></script>
 
 <!-- <script type="text/javascript" src="http://lib.sinaapp.com/js/jquery/1.7.2/jquery.min.js"></script>  -->
 <script type="text/javascript" src="mapjs/api_v2.0.js"></script>
-<script type="text/javascript" src="mapjs/convertor.js"></script>  
-
+<script type="text/javascript" src="mapjs/convertor.js"></script>
+	<script src="js/MoreIma.js"></script>
 <script type="text/javascript" charset="utf-8" >
 
   	//phonegap调用相机部分
@@ -107,7 +133,7 @@
 	
 	//********************************照片******************************
 	//事件触发函数
-	function getMedia(id,type,name,num) {
+	function getMedia(id,type,name,num,phonetype) {
 	    idtmp=id;
 	    pictureSource=navigator.camera.PictureSourceType;
 	    destinationType=navigator.camera.DestinationType;
@@ -116,7 +142,7 @@
 	    // 从设定的来源处获取图像文件URI
 	    navigator.camera.getPicture(onURISuccess, onFail, {quality:50,
 	    destinationType: destinationType.FILE_URI,
-	    sourceType: pictureSource.PHOTOLIBRARY,mediaType:mediaType.ALLMEDIA});
+	    sourceType: pictureSource.SAVEDPHOTOALBUM,mediaType:mediaType.PICTURE});
 	    
 	    // 当成功得到一张照片的URI后被调用
 		function onURISuccess(URI) {
@@ -124,20 +150,24 @@
 		    
 		    //转换URI到全路径
 			function gotFileEntry(fileEntry) {
+		    	
 				var fpath = fileEntry.fullPath;
 				
-				window.plugins.imagePluginAPI.startActivity(testSuccess,testError, fpath);
-				function testSuccess(res){
+			//	window.plugins.imagePluginAPI.startActivity(testSuccess,testError, fpath);
+			//	function testSuccess(res){
 					var values=fpath.split("/");
 					URI="file://"+fpath;
 					var url = document.getElementById(idtmp);
 					var lll= document.getElementsByName("imageuri")[num-1].setAttribute("uri",URI);
 					url.value = values[values.length-1];
-					//alert(json);
-				}
-				function testError(){
-					alert("error");
-				}
+					var phoneIma=values[6];
+					var phone_type=phonetype;
+					alert(values[6]);
+					bbbb(phoneIma,phone_type);
+			//	}
+			//	function testError(){
+			//		alert("error");
+			//	}
 				
 				//工厂模式
 			    //var media = crud.dom.factory("MEDIA");
@@ -159,10 +189,9 @@
 		    alert('Failed because: ' + message);
 		}
 	}
-	
 	//********************************拍照、录像、录音******************************
 	// “Capture”按钮点击事件触发函数
-	function capture(id,type) {
+	function capture(id,type,name,num,phoneType) {
 		idtmp=id;
 	    // 启动设备的摄像头应用程
 	    // 允许用户最多采集1个图像
@@ -180,26 +209,24 @@
 		    var i, len; 
 		    for (i = 0, len = mediaFiles.length; i < len; i += 1) { 
 		        //uploadFile(mediaFiles[i]); 
-		        
+		       // alert(mediaFiles[i].fullPath);
+		        var res=mediaFiles[i].fullPath;
 		        window.plugins.imagePluginAPI.startActivity(testSuccess,testError, mediaFiles[i].fullPath);
-				function testSuccess(res){
+				function testSuccess(){
+					var values=res.split("/")
+					var URI="file://"+res;
 					var url = document.getElementById(idtmp);
-					url.value = res;
-					alert(res);
-					//alert(json);
+					var lll= document.getElementsByName("imageuri")[num-1].setAttribute("uri",URI);
+
+					url.value = values[values.length-1];
+					var phoneIma=values[6];
+					var phone_type=phoneType;
+					aa(phoneIma,phone_type);
 				}
 				function testError(){
 					alert("error");
 				}
 				
-		        //工厂模式
-			    //var mediaFile = crud.dom.factory("MEDIAFILE");
-			    //mediaFile.doMediaFile(mediaFiles[i],type,UpLoadCallBack,"上传失败！");
-			    
-			    //function UpLoadCallBack(res){
-			    //    var url = document.getElementById(idtmp);
-			    //    url.value = res.response;
-			    //}
 		    }      
 		} 
 		
@@ -209,26 +236,7 @@
 		    navigator.notification.alert(msg, null, 'Uh oh!'); 
 		} 
 	}
-/*******************************************************************************************/
 	
-	
-	function capturePhoto() {
-		destinationType=navigator.camera.DestinationType;
-        navigator.camera.getPicture(oAddPhoto, oonFail, {
-            quality : 100,
-            destinationType : destinationType.FILE_URI,//这里要用FILE_URI，才会返回文件的URI地址            sourceType : Camera.PictureSourceType.CAMERA,
-            allowEdit : true,
-            encodingType : Camera.EncodingType.JPEG,
-           // popoverOptions : CameraPopoverOptions,
-            saveToPhotoAlbum : true
-        });
-   
-	function oonFail(message) {
-        alert('拍照失败的原因: ' + message);
-    }
-    
-    function oAddPhoto(imageURI) {
-        alert(imageURI);
-    }
-	 }
+
+
 </script>

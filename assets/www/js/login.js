@@ -10,17 +10,26 @@ function dl(){
     post.doPost("/ipad/user/JnLogin.json",data,checkLoginCallback,"登陆失败！");*/
 
 //  测试用
-//	var user_name = "wenjian123";  
-//    var pass_word = "111111";
+/*	var user_name = "yangjinglin";  
+    var pass_word = "111111";*/
 //  上线用
   var user_name = $("#name").val();
-  var pass_word = $("#password").val()
+  var pass_word = $("#password").val();
 	var wsLoginUrl = "/ipad/user/JnLogin.json"+"?login="+user_name+"&password="+pass_word;
+    var xval=getBusyOverlay('viewport',{color:'white', opacity:0.75, text:'正在登录，请稍后......', style:'text-shadow: 0 0 3px black;font-weight:bold;font-size:16px;color:white'},{color:'#ff0', size:100, type:'o'});  
+    setTimeout(function() {
     $.ajax({
-        url:wsHost + wsLoginUrl,
+        url:wsHost+ wsLoginUrl,
         type: "GET",
         dataType:'json',
+        beforeSend:function(){ 
+        	if(xval) {               
+        	xval.settext("正在登录，请稍后......");                      
+        	}              
+        	}, 
+        	
         success: function (json) {
+        	xval.remove(); 
         	var objs = $.evalJSON(json);
         	if(objs.result.status == 'success'){
         		checkLoginCallback(json);
@@ -33,9 +42,11 @@ function dl(){
         	 alert("登录失败!");
         }
     });
+    }, 400);
 }
 //回调
 function checkLoginCallback(json){
+	alert(json);
     var obj = $.evalJSON(json);
     var result = obj.result.status;
 //    alert("result:"+result);
@@ -44,7 +55,9 @@ function checkLoginCallback(json){
     	return;
     }
     var session = window.sessionStorage;//有些不支持sessionStorage，而是globalStroage.
-    var manggerList = managerList();
+    var manggerListt = managerList();
+    var manggerList=manggerListt.manager;
+   
     if(obj.noTime=="无"){
     	 session.setItem("time","对不起，您今天还没有登陆!!");
     }else if(obj.noTime=="有"){
@@ -56,7 +69,7 @@ function checkLoginCallback(json){
     session.setItem("userType",obj.result.user.userType);
     session.setItem("managerList",manggerList);
     //定时定位
-    //var location = window.setInterval(getLocations,1000*60*5);
+   // var location = window.setInterval(getLocations,1000*60*5);
 
     //alert("getItem:"+session.getItem("id"));
     //alert(sssion.getItem("user_id"));

@@ -14,9 +14,15 @@ function myjjgl(){
     "<th>产品利率</th>"+ 
     "<th>产品期限</th>"+
 "</tr>";
-	$.get(wsHost+cpxxurl,callbackresult);
+	var xval=getBusyOverlay('viewport',{color:'white', opacity:0.75, text:'正在加载，请稍后......', style:'text-shadow: 0 0 3px black;font-weight:bold;font-size:16px;color:white'},{color:'#ff0', size:100, type:'o'});  
+    
+	 setTimeout(function() {
+		 $.get(wsHost+cpxxurl,callbackresult);
+		 xval.settext("正在加载，请稍后......");
+	 },400);
 	
 	function callbackresult(json){
+		xval.remove(); 
 		var obj = $.evalJSON(json);
 		for(var i = 0;i<obj.result.length;i++){
 			tmp=tmp+"<tr onclick='check(this)'><td><span class='radio'> " +
@@ -42,8 +48,9 @@ $("#mainPage").html("<div class='title'>进件管理</div>"+
 					    "<div class='jjstep'>" +
     					    "<div class='step1'>选择产品</div>"+
                             "<div class='step2'>选择客户</div>"+
-                            "<div class='step2'>选择资料类型</div>"+
-                            "<div class='step2'>信息录入</div>"+
+                            "<div class='step2'>调查照</div>"+
+                            "<div class='step2'>确认调查照</div>"+
+                            "<div class='step2'>调查模板导入</div>"+
 					    "</div><div class='line'></div>"+
 	                    "<div class='bottom-content' style='padding-top:5px;'>"+
     						"<table id='cplb' class='cpTable' style='text-align:center;margin-top:0;'>"+
@@ -93,9 +100,11 @@ $("#mainPage").html("<div class='title'>进件管理</div>"+
 	
 	}
 }
+var cardId;
+var productInfo;
 var allobj={};
-function myjjgl2(productInfo){
-	
+function myjjgl2(res){
+	productInfo=res;
 	var cpxxurl="/ipad/addIntoPieces/browseCustomer.json";
 	var userId = window.sessionStorage.getItem("userId");
 	var tmp ="";
@@ -105,7 +114,7 @@ function myjjgl2(productInfo){
 	var head ="<tr>"+                         
     "<th></th>"+                 
     "<th>中文姓名</th>"+  
-    "<th>身份证</th>"+
+    "<th>证件类型</th>"+
     "<th>证件号码</th>"+ 
 "</tr>";
 	$.get(wsHost+cpxxurl,{userId:userId,productId:productInfo.productId},callbackresult);
@@ -114,7 +123,7 @@ function myjjgl2(productInfo){
 		var obj = $.evalJSON(json);
 		for(var i = 0;i<obj.items.length;i++){
 			
-			if(obj.items[i].cardType=="0"){
+			if(obj.items[i].cardType=="CST0000000000A" || obj.items[i].cardType=="0"){
 				obj.items[i].cardType="身份证";
 			}else if(obj.items[i].cardType=="1"){
 				obj.items[i].cardType="军官证";
@@ -145,14 +154,15 @@ function myjjgl2(productInfo){
 window.scrollTo(0,0);//滚动条回到顶端
 $("#mainPage").html("<div class='title'>" +
             		    "<img src='images/back.png' onclick='myjjgl()'/>进件管理" +
-//                        "<input type='text' style='margin:13px 40px;' placeholder='搜索' onkeyup='searchTR(this)'/>" +
+                        "<input type='text' id='kexm' style='margin:13px 40px;' placeholder='搜索' onchange='sousuo(this)'/>" +
             		"</div>"+  
 					"<div class='content'>" +
     					"<div class='jjstep'>" +
-                            "<div class='step1' onclick='myjjgl()'>"+productInfo.productName+"</div>"+
+                            "<div class='step1'>"+productInfo.productName+"</div>"+
                             "<div class='step3'>选择客户</div>"+
-                            "<div class='step2'>选择资料类型</div>"+
-                            "<div class='step2'>信息录入</div>"+
+                            "<div class='step2'>调查照</div>"+
+                            "<div class='step2'>确认调查照</div>"+
+                            "<div class='step2'>调查模板导入</div>"+
 //                            "<input type='button' class='btn btn-primary btn-large next' value='下一步' onclick='newUser1()'/>"+
                         "</div><div class='line'></div>"+
                         "<div class='bottom-content' style='padding-top:5px;'>"+
@@ -191,12 +201,51 @@ $("#mainPage").html("<div class='title'>" +
 		if ($("input[type='radio']").is(':checked')) {
 
 			var values =$('input[name="checkbox"]:checked').attr("value").split("@");
+			
 			productInfo.customerId = values[0];
 			productInfo.cardId = values[1];
 			productInfo.chineseName = values[2];
 			allobj.cardId = values[1];
+			cardId=allobj.cardId;
 			allobj.chineseName = values[2];
-			newUser1(productInfo);
+			var fxsxurl ="/ipad/NotifictionMessage/managerbrowse.json";
+			var fxsxurl1 ="/ipad/customer/selectByCardId3.json?cardId="+allobj.cardId;
+			var url = fxsxurl+"?userId="+window.sessionStorage.getItem("userId");
+			var custormerid="";
+			var custormerid1="";
+			$.ajax({
+				url:wsHost + url,
+				type: "GET",
+				dataType:'json',
+				async: false,
+				success: function (json) {
+					obj = $.evalJSON(json);
+					for(var i = 0;i<obj.size;i++){
+						if(productInfo.customerId==obj.result[i].customerId){
+							 custormerid=1;
+						}
+					}
+					if(custormerid!=1){
+						$.ajax({
+							url:wsHost + fxsxurl1,
+							type: "GET",
+							dataType:'json',
+							async: false,
+							success: function (json) {
+								obj = $.evalJSON(json);
+								if(obj.size>0){
+									custormerid1=1;
+								}
+							}})
+					}
+					if(custormerid==1){
+						alert("对不起,该客户时在风险客户名单里面,不能申请进件!!!!")
+					}else if(custormerid1==1){
+						alert("对不起,该客户时在黑名单里面,不能申请进件!!!!")
+					}else if(custormerid1!=1 & custormerid!=1){
+						newUser6 (productInfo);
+					}
+					}})
 		}else{
 			alert("请选择一行");
 			}
@@ -204,314 +253,998 @@ $("#mainPage").html("<div class='title'>" +
 		})
 	} 
 }
+
+function sousuo(){
+	var userId = window.sessionStorage.getItem("userId");
+	var kexm=$("#kexm").val();
+	var tmp ="";
+	var result={};
+	var page=1;
+	var j = 1;
+	var head ="<tr>"+                         
+    "<th></th>"+                 
+    "<th>中文姓名</th>"+  
+    "<th>证件类型</th>"+
+    "<th>证件号码</th>"+ 
+"</tr>";
+	var edpgUrl="/ipad/addIntoPieces/sousCustomer.json";
+	$.ajax({
+		url:wsHost + edpgUrl,
+		type: "GET",
+		dataType:'json',
+		data:{kexm:kexm,userId:userId,productId:productInfo.productId},
+		success: function (json) {
+			obj = $.evalJSON(json);
+			for(var i = 0;i<obj.size;i++){
+				
+				if(obj.result[i].cardType=="CST0000000000A" || obj.result[i].cardType=="0"){
+					obj.result[i].cardType="身份证";
+				}else if(obj.result[i].cardType=="1"){
+					obj.result[i].cardType="军官证";
+				}else if(obj.result[i].cardType=="2"){
+					obj.result[i].cardType="护照";
+				}else if(obj.result[i].cardType=="3"){
+					obj.result[i].cardType="香港身份证";
+				}else if(obj.result[i].cardType=="4"){
+					obj.result[i].cardType="澳门身份证";
+				}else if(obj.result[i].cardType=="5"){
+					obj.result[i].cardType="台湾身份证";
+				}
+				
+				tmp=tmp+"<tr onclick='check(this)'><td><span class='radio'> " +
+				"<input type='radio' name='checkbox' value='"+obj.result[i].id+"@"+obj.result[i].cardId+"@"+obj.result[i].chineseName+
+				"'/>"+"</span></td>"+  
+				"<td>"+obj.result[i].chineseName+"</td>"+
+				"<td>"+obj.result[i].cardType+"</td>"+
+				"<td>"+obj.result[i].cardId+"</td></tr>"
+
+				if((i+1)%5==0){
+					result[j]=tmp;
+					j++;
+					tmp="";
+				}
+			}
+			result[j]=tmp;
+	window.scrollTo(0,0);//滚动条回到顶端
+	$("#mainPage").html("<div class='title'>" +
+	            		    "<img src='images/back.png' onclick='myjjgl()'/>进件管理" +
+	            		"</div>"+  
+						"<div class='content'>" +
+	    					"<div class='jjstep'>" +
+	                            "<div class='step1'>"+productInfo.productName+"</div>"+
+	                            "<div class='step3'>选择客户</div>"+
+	                            "<div class='step2'>调查照</div>"+
+	                            "<div class='step2'>确认调查照</div>"+
+	                            "<div class='step2'>调查模板导入</div>"+
+//	                            "<input type='button' class='btn btn-primary btn-large next' value='下一步' onclick='newUser1()'/>"+
+	                        "</div><div class='line'></div>"+
+	                        "<div class='bottom-content' style='padding-top:5px;'>"+
+	    						"<table class='cpTable' id='khlb' style='text-align:center;margin-top:0;'>"+
+	                              head+result[page]+
+	                            "</table>"+
+	                            "<p><input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
+	        					"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
+	        					"<input type='button' class='btn btn-primary btn-large next' id='xyb' value='下一步'/></p>"+
+	                        "</div>"+
+						"</div>");
+	    $(".right").hide();
+	    $("#mainPage").show();
+	    $("#xyy").click(function(){
+			page=page+1;
+			if(result[page]){
+				$("#khlb").html(head+result[page]);
+			}else{
+				alert("当前已经是最后一页");
+				page=page-1;
+			}
+		})
+		$("#syy").click(function(){
+			page=page-1; 
+			if(result[page]){
+				$("#khlb").html(head+result[page]);
+			}else{
+				alert("当前已经是第一页");
+				page = page+1;
+			}
+		})	
+			
+			$("#xyb").click(function(){
+		
+		if ($("input[type='radio']").is(':checked')) {
+
+			var values =$('input[name="checkbox"]:checked').attr("value").split("@");
+			
+			productInfo.customerId = values[0];
+			productInfo.cardId = values[1];
+			productInfo.chineseName = values[2];
+			allobj.cardId = values[1];
+			cardId=allobj.cardId;
+			allobj.chineseName = values[2];
+			var fxsxurl ="/ipad/NotifictionMessage/managerbrowse.json";
+			var fxsxurl1 ="/ipad/customer/selectByCardId3.json?cardId="+allobj.cardId;
+			var url = fxsxurl+"?userId="+window.sessionStorage.getItem("userId");
+			var custormerid="";
+			var custormerid1="";
+			$.ajax({
+				url:wsHost + url,
+				type: "GET",
+				dataType:'json',
+				async: false,
+				success: function (json) {
+					obj = $.evalJSON(json);
+					for(var i = 0;i<obj.size;i++){
+						if(productInfo.customerId==obj.result[i].customerId){
+							 custormerid=1;
+						}
+					}
+					if(custormerid!=1){
+						$.ajax({
+							url:wsHost + fxsxurl1,
+							type: "GET",
+							dataType:'json',
+							async: false,
+							success: function (json) {
+								obj = $.evalJSON(json);
+								if(obj.size>0){
+									custormerid1=1;
+								}
+							}})
+					}
+					if(custormerid==1){
+						alert("对不起,该客户时在风险客户名单里面,不能申请进件!!!!")
+					}else if(custormerid1==1){
+						alert("对不起,该客户时在黑名单里面,不能申请进件!!!!")
+					}else if(custormerid1!=1 & custormerid!=1){
+						newUser6 (productInfo);
+					}
+					}})
+		}else{
+			alert("请选择一行");
+			}
+		
+		})	
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		}})
+}
+var b;
+function newUser6(addIntopiece){
+	b=addIntopiece;
+	window.scrollTo(0,0);//滚动条回到顶端
+	$("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>选择图片上传方式</div>"+  
+	                    "<div class='content'>" +
+	                        "<div class='jjstep'>" +
+	                            "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
+	                            "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
+	                            "<div class='step3'>调查照</div>"+
+	                            "<div class='step2'>确认调查照</div>"+
+	                            "<div class='step2'>调查模板导入</div>"+
+	                        "</div><div class='line'></div>"+
+	                       "<div class='bottom-content'>"+
+	                            "<div class='box jjgl' id = 'diaocmb' style='margin-left:400px;margin-right:50px;display:inline-block;'>" +
+	                                "<img src='images/xxzl.png'/>" +
+	                                "<span>从图库中选择</span>"+
+	                            "</div>"+
+	                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;'>" +
+	                                "<img src='images/yxzl.png' />" +
+	                                "<span>在线拍照</span>"+
+	                            "</div>"+
+							"</div>"+
+	                      
+					"</div>");
+	    $(".right").hide();
+	    $("#mainPage").show();
+	     $("#diaocmb").click(function(){
+	    	 newUser7 (addIntopiece);
+	     });
+	     $("#yxzlxx").click(function(){
+	    	 UserNew(addIntopiece);
+	    })
+	    $("#mjjgl2").click(function(){
+	    	var productInfo={};
+			productInfo.productId = addIntopiece.productId;
+			productInfo.productName = addIntopiece.productName;
+			myjjgl2(productInfo);
+	    })
+
+	}
+
+
+
+
+
+
+
+
 //新建进件
-function newUser1(addIntopiece){
+var val;
+function newUser7 (addIntopiece){
 window.scrollTo(0,0);//滚动条回到顶端
 $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>进件管理</div>"+  
                     "<div class='content'>" +
                         "<div class='jjstep'>" +
                             "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
                             "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
-                            "<div class='step3'>选择资料类型</div>"+
-                            "<div class='step2'>信息录入</div>"+
+                            "<div class='step3'>图库选择</div>"+
+                            "<div class='step2'>确认调查照</div>"+
+                            "<div class='step2'>调查模板导入</div>"+
                         "</div><div class='line'></div>"+
-                        "<div class='bottom-content'>"+
-                            "<div class='box jjgl' id = 'diaocmb' style='margin-left:400px;margin-right:50px;display:inline-block;'>" +
-                                "<img src='images/xxzl.png'/>" +
-                                "<span>客户信息调查模板</span>"+
+                       "<div class='bottom-content'>"+
+                            "<div class='box jjgl' id = 'jycs' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+                            "<img src='images/ugc_icon_type_photo.png' id='jycs'/>" +
+                                "<span>经营场所</span>"+
                             "</div>"+
-                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;'>" +
-                                "<img src='images/yxzl.png' />" +
-                                "<span>客户影像资料采集</span>"+
+                            "<div class='box jjgl' id='jyqs' style='float:none;display:inline-block;margin-right:50px;'>" +
+                                "<img src='images/ugc_icon_type_photo.png' />" +
+                                "<span>经营权属</span>"+
                             "</div>"+
+                            "<div class='box jjgl' id='jydj' style='float:none;display:inline-block;margin-right:50px;'>" +
+                            "<img src='images/ugc_icon_type_photo.png'  />" +
+                            "<span>经营单据</span>"+
+                        "</div>"+
+                        "<div class='box jjgl' id='qtsr' style='float:none;display:inline-block;margin-right:50px;'>" +
+                        "<img src='images/ugc_icon_type_photo.png' />" +
+                        "<span>其他收入</span>"+
+                    "</div>"+
+                    "</div>"+
+               	 "<div class='spinner'>"+
+				  "<div class='bounce1'></div>"+
+				" <div class='bounce2'></div>"+
+				  "<div class='bounce2'></div></div>"+
+				  
+                    "<div class='bottom-content'>"+
+                    "<div class='box jjgl' id = 'sfzm' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+                    "<img src='images/ugc_icon_type_photo.png' />" +
+                        "<span>身份证明</span>"+
+                    "</div>"+
+                    "<div class='box jjgl' id='grzc' style='float:none;display:inline-block;margin-right:50px;'>" +
+                        "<img src='images/ugc_icon_type_photo.png' />" +
+                        "<span>个人资产</span>"+
+                    "</div>"+
+                    "<div class='box jjgl' id='jf' style='float:none;display:inline-block;margin-right:50px;'>" +
+                    "<img src='images/ugc_icon_type_photo.png' />" +
+                    "<span>家访</span>"+
+                "</div>"+
+                "<div class='box jjgl' id='db' style='float:none;display:inline-block;margin-right:50px;'>" +
+                "<img src='images/ugc_icon_type_photo.png' />" +
+                "<span>担保</span>"+
+            "</div>"+
 						"</div>"+
-					"</div>");
+						  "<div class='bottom-content'><p>"+
+						"<input type='button' class='btn btn-large btn-primary' value='下一步' id = 'xyb'/>"+
+						 "</div></p>"+
+				"</div>");
     $(".right").hide();
     $("#mainPage").show();
+    $('.spinner').hide();
+    $("#jycs").click(function(){
+    	var content=1;
+    	var tel;
+    	var size;
+    	window.plugins.message.send(success,error,tel,content,size);
+    	//$('#jycs').bind('click',onSend);
+    })
+      $("#jyqs").click(function(){
+    		var content=2;
+        	var tel;
+        	var size;
+        	var url;
+        	window.plugins.message.send(success,error,tel,content,size,url);
+    	
+    })
+      $("#qtsr").click(function(){
+    	  var content=6;
+      	var tel;
+      	var size;
+    	var url;
+    	window.plugins.message.send(success,error,tel,content,size,url);
+    })
+      $("#sfzm").click(function(){
+    	  var content=7;
+        	var tel;
+        	var size;
+        	var url;
+        	window.plugins.message.send(success,error,tel,content,size,url);
+    	
+    })
+      $("#grzc").click(function(){
+    	  var content=8;
+      	var tel;
+      	var size;
+    	var url;
+    	window.plugins.message.send(success,error,tel,content,size,url);
+    })
+      $("#jf").click(function(){
+    	  var content=9;
+        	var tel;
+        	var size;
+        	var url;
+        	window.plugins.message.send(success,error,tel,content,size,url);
+    })
+      $("#db").click(function(){
+    	  var content=10;
+      	var tel;
+      	var size;
+    	var url;
+    	window.plugins.message.send(success,error,tel,content,size,url);
+    })
     
-    $("#khxxlb").click(function(){
-    	
-    	myjjgl2(addIntopiece);
-    })
-    $("#mjjgl2").click(function(){
-    	
-    	myjjgl2(addIntopiece);
-    })
     
-    $("#diaocmb").click(function(){
-    	
-    	dcmbadd(addIntopiece);
-    })
     
-    $("#yxzlxx").click(function(){
-    	
-    	yxzladd(addIntopiece);
-    })
+    
+    
+    
+	$("#mjjgl2").click(function(){
+		newUser6(addIntopiece);
+	});
+	$("#xyb").click(function(){
+		newUser9 (addIntopiece);
+	});
+	
+	$("#jydj").click(function(){
+		window.scrollTo(0,0);//滚动条回到顶端
+		$("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>进件管理</div>"+  
+		                    "<div class='content'>" +
+		                        "<div class='jjstep'>" +
+		                            "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
+		                            "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
+		                            "<div class='step3'>调查照</div>"+
+		                            "<div class='step3'>经营场所照</div>"+
+		                            "<div class='step2'>确认调查照</div>"+
+		                            "<div class='step2'>调查模板导入</div>"+
+		                        "</div><div class='line'></div>"+
+		                    "<div class='bottom-content'>"+
+		                    "<div class='box jjgl' id = 'ljjc' style='margin-left:200px;margin-right:100px;display:inline-block;'>" +
+		                    "<img src='images/ugc_icon_type_photo.png' />" +
+		                        "<span>逻辑检查</span>"+
+		                    "</div>"+
+		                    "<div class='box jjgl' id='zcfz' style='float:none;display:inline-block;margin-right:100px;'>" +
+		                        "<img src='images/ugc_icon_type_photo.png'/>" +
+		                        "<span>资产负债</span>"+
+		                    "</div>"+
+		                    "<div class='box jjgl' id='sy' style='float:none;display:inline-block;margin-right:100px;'>" +
+		                    "<img src='images/ugc_icon_type_photo.png'/>" +
+		                    "<span>损益</span>"+
+		                "</div>"+
+								"</div>"+
+								  "<div class='bottom-content'><p>"+
+								"<input type='button' class='btn btn-large btn-primary' value='返回' id = 'xyb'/>"+
+								 "</div></p>"+
+								 "<div class='spinner'>"+
+								  "<div class='bounce1'></div>"+
+								" <div class='bounce2'></div>"+
+								  "<div class='bounce2'></div>"+
+						"</div>");
+		    $(".right").hide();
+		    $("#mainPage").show();
+		    $('.spinner').hide();
+		    $("#ljjc").click(function(){
+		    	  var content=3;
+		      	var tel;
+		      	var size;
+		    	var url;
+	        	window.plugins.message.send(success,error,tel,content,size,url);
+		    })
+		      $("#zcfz").click(function(){
+		    	  var content=4;
+		        	var tel;
+		        	var size;
+		        	var url;
+		        	window.plugins.message.send(success,error,tel,content,size,url);
+		    })
+		      $("#sy").click(function(){
+		    	  var content=5;
+		      	var tel;
+		      	var size;
+		    	var url;
+	        	window.plugins.message.send(success,error,tel,content,size,url);
+		    })
+		    $("#xyb").click(function(){
+		    	newUser7 (addIntopiece);
+			});
+		    $("#mjjgl2").click(function(){
+		    	newUser7 (addIntopiece);
+		    });
+	});
+}
+var ImageCounts=0;
+var obj=[];
+var objs=[];
+var success=function(data){
+	if(data.size==0){
+		alert("对不起,您pad该类照片文件夹没有照片!!");
+	}else{alert("选择了"+data.size+"张照片进行上传!!");
+	phone_type=data.content;
+	var aa=data.target;
+	aa=aa.replace("[", "");
+	aa=aa.replace("]", "");
+	obj=aa.split(",");
+	var aa1=data.url;
+	aa1=aa1.replace("[", "");
+	aa1=aa1.replace("]", "");
+	objs=aa1.split(",");
+	var applicationId=null;
+	$('.spinner').show();
+	
+		for(var ab=0;ab<data.size;ab++){
+			 var fileURI ="file://"+objs[ab].trim();
+	    	 var fileName =obj[ab].trim();
+	    	 var options = new FileUploadOptions();  
+	    	    options.fileKey = "file";  
+	    	    options.fileName = fileName; 
+	    	    options.mimeType = "multipart/form-data";  
+	    	    options.chunkedMode = false;  
+	    	    ft = new FileTransfer();  
+	    	    var uploadUrl=encodeURI(wsHost+"/ipad/addIntopieces/imageImport.json?productId="+b.productId+"&customerId="+b.customerId+"&fileName="+options.fileName+"&applicationId="+applicationId+"&phone_type="+phone_type);  
+	    	    ft.upload(fileURI,uploadUrl,uuuSuccesss, uploadFailed, options); 
+		}
+	    	    
+	}
+};
+var error=function(){
+	alert("获取照片失败");
+};
+
+function uuuSuccesss() {  
+	ImageCounts=ImageCounts+1;
+	if(ImageCounts==obj.length){
+		$('.spinner').hide();
+		alert('上传成功');
+		ImageCounts=0;
+	}
 }
 
-////客户信息资料采集
-//function khxxzlcj(addIntopiece){
-//	alert(addIntopiece.productName);
-//window.scrollTo(0,0);//滚动条回到顶端
-//$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='newUser1()'/>进件管理</div>"+  
-//                    "<div class='content'>" +
-//                        "<div class='jjstep'>" +
-//                            "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
-//                            "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
-//                            "<div class='step3' id='xxzlcj'>信息资料采集</div>"+
-//                            "<div class='step3'>客户信息调查模板</div>"+
-////                            "<div class='step2'>信息录入</div>"+
-//                        "</div><div class='line'></div>"+
-//                        "<div class='bottom-content'>"+
-//                            "<table id='message1' class='cpTable'>"+
-//                                "<tr>"+                             
-//                                    "<th colspan='6'>客户基本信息</th>"+ 
-//                                "</tr>"+
-//                                "<tr>"+                             
-//                                    "<td>个人信息<span class='label label-success'>已录入</span></td>"+             
-//                                    "<td>房产信息<span class='label label-success'>已录入</span></td>"+
-//                                    "<td>家庭信息<span class='label label-success'>已录入</span></td>"+ 
-//                                    "<td>车产信息<span class='label label-important'>未录入</span></td>"+ 
-//                                    "<td>联系人信息<span class='label label-important'>未录入</span></td>"+ 
-//                                    "<td>居住信息<span class='label label-success'>已录入</span></td>"+
-//                                "</tr>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='grxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='grxx_edit()'/>" +
-//                                    "</td>"+         
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='fcxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='fcxx_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='jtxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='jtxx_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='ccxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='ccxx_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='lxrxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='lxrxx_edit()'/>" +
-//                                    "</td>"+   
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='jzxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='jzxx_edit()'/>" +
-//                                    "</td>"+
-//                                "</tr>"+                           
-//                            "</table>"+
-//                            "<table id='message2' class='cpTable'>"+
-//                                "<tr>"+                             
-//                                    "<th colspan='5'>客户经营信息</th>"+ 
-//                                "</tr>"+
-//                                "<tr>"+                             
-//                                    "<td>企业基本信息<span class='label label-success'>已录入</span></td>"+             
-//                                    "<td>企业业务信息<span class='label label-success'>已录入</span></td>"+            
-//                                    "<td>企业店铺信息<span class='label label-success'>已录入</span></td>"+            
-//                                    "<td>企业开户信息<span class='label label-success'>已录入</span></td>"+            
-//                                    "<td>其他信息<span class='label label-success'>已录入</span></td>"+     
-//                                "</tr>"+
-//                                "<tr>"+                             
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='qyjbxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='qyjbxx_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='qyywxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='qyywxx_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='qydpxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='qydpxx_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='qykhxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='qykhxx_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='qyqtxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='qyqtxx_edit()'/>" +
-//                                    "</td>"+
-//                                "</tr>"+
-//                            "</table>"+
-//                            "<table id='message3' class='cpTable'>"+
-//                                "<tr>"+                             
-//                                    "<th colspan='6'>客户财务信息</th>"+ 
-//                                "</tr>"+
-//                                "<tr>"+                             
-//                                    "<td rowspan='2'>资产负债表</td>"+              
-//                                    "<td>资产状况<span class='label label-success'>已录入</span></td>"+                  
-//                                    "<td>负债情况<span class='label label-success'>已录入</span></td>"+             
-//                                    "<td>权益状况<span class='label label-important'>未录入</span></td>"+             
-//                                    "<td>其他信息<span class='label label-important'>未录入</span></td>"+            
-//                                    "<td></td>"+ 
-//                                "</tr>"+
-//                                "<tr>"+
-//    								"<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='zczk_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='zczk_edit()'/>" +
-//                                    "</td>"+
-//    								"<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='fzqk_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='fzqk_edit()'/>" +
-//                                    "</td>"+								
-//    								"<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='qyzk_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='qyzk_edit()'/>" +
-//                                    "</td>"+															
-//    								"<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='zcfzqtxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='zcfzqtxx_edit()'/>" +
-//                                    "</td>"+           
-//                                    "<td></td>"+ 
-//                                "</tr>"+
-//                                "<tr>"+   								
-//                                    "<td rowspan='2'>损益表</td>"+              
-//                                    "<td>利润表简表<span class='label label-important'>未录入</span></td>"+                  
-//                                    "<td>利润表标准表<span class='label label-important'>未录入</span></td>"+             
-//                                    "<td>其他信息<span class='label label-important'>未录入</span></td>"+                 
-//                                    "<td></td>"+            
-//                                    "<td></td>"+ 
-//                                "</tr>"+
-//                                "<tr>"+
-//    								"<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='lrbjb_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='lrbjb_edit()'/>" +
-//                                    "</td>"+
-//    								"<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='lrbbzb_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='lrbbzb_edit()'/>" +
-//                                    "</td>"+								
-//    								"<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='syqtxx_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='syqtxx_edit()'/>" +
-//                                    "</td>"+           
-//                                    "<td></td>"+            
-//                                    "<td></td>"+ 
-//                                "</tr>"+	
-//                                "<tr>"+          
-//                                    "<td>现金流表<span class='label label-important'>未录入</span></td>"+            
-//                                    "<td>点货单<span class='label label-success'>已录入</span></td>"+            
-//                                    "<td>固定资产清单<span class='label label-success'>已录入</span></td>"+        
-//                                    "<td>应收预付清单<span class='label label-important'>未录入</span></td>"+      
-//                                    "<td>应付预收清单<span class='label label-important'>未录入</span></td>"+      
-//                                    "<td>负债项目明细清单<span class='label label-important'>未录入</span></td>"+   
-//                                "</tr>"+
-//                                "<tr>"+  
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='xjlb_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='xjlb_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='dhd_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='dhd_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='gdzcqd_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='gdzcqd_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='ysyfqd_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='ysyfqd_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='yfysqd_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='yfysqd_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='fzxmmxqd_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='fzxmmxqd_edit()'/>" +
-//                                    "</td>"+
-//                                "</tr>"+
-//                            "</table>"+ 
-//                        "</div>"+
-//                    "</div>");
-//    $(".right").hide();
-//    $("#mainPage").show();
-//  $("#khxxlb").click(function(){
-//    	
-//    	myjjgl2(addIntopiece);
-//    })
-//    $("#xxzlcj").click(function(){
-//    	
-//    	newUser1(addIntopiece);
-//    })
-//}
 
-//客户影像资料采集
-//function khyxzlcj(addIntopiece){
-//window.scrollTo(0,0);//滚动条回到顶端
-//$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='newUser1()'/>影像资料采集</div>"+  
-//                    "<div class='content' style='text-align:center;'>" +  
-//                        "<div class='jjstep'>" +
-//                        "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
-//                        "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
-//                        "<div class='step3' id='xxzlcj'>信息资料采集</div>"+
-//                            "<div class='step3'>客户影像资料采集</div>"+
-////                            "<div class='step2'>信息录入</div>"+
-//                        "</div><div class='line'></div>"+
-//                        "<div class='bottom-content'>"+
-//                            "<table id='message1' class='cpTable' style='margin-top:20px;'>"+
-//                                "<tr>"+                             
-//                                    "<th colspan='6'>客户影像资料</th>"+ 
-//                                "</tr>"+
-//                                "<tr>"+                             
-//                                    "<td>房产证<span class='label label-success'>已录入</span></td>"+             
-//                                    "<td>结婚证<span class='label label-success'>已录入</span></td>"+
-//                                    "<td>征信报告<span class='label label-important'>未录入</span></td>"+ 
-//                                    "<td>银行流水<span class='label label-important'>未录入</span></td>"+            
-//                                    "<td>其他影像资料<span class='label label-success'>已录入</span></td>"+
-//                                "</tr>"+
-//                                "<tr>"+       
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='fcz_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='fcz_edit()'/>" +
-//                                    "</td>"+         
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='jhz_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='jhz_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='zxbg_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='zxbg_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                        "<input type='button' class='btn' value='添加' onclick='yhls_add()'/>" +
-//                                        "<input type='button' class='btn' value='查看' onclick='yhls_edit()'/>" +
-//                                    "</td>"+
-//                                    "<td>" +
-//                                    "<input type='button' class='btn' value='添加' onclick='qtyxzl_add()'/>" +
-//                                    "<input type='button' class='btn' value='查看' onclick='qtyxzl_edit()'/>" +
-//                                "</td>"+
-//                                "</tr>"+                           
-//                            "</table>"+ 
-//                        "</div>"+
-//                    "</div>");
-//    $(".right").hide();
-//    $("#mainPage").show();
-//$("#khxxlb").click(function(){
-//    	
-//    	myjjgl2(addIntopiece);
-//    })
-//    $("#xxzlcj").click(function(){
-//    	
-//    	newUser1(addIntopiece);
-//    })
-//    
-//    
-//}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//新建进件
+function UserNew(addIntopiece){
+	a=addIntopiece;
+	var objs;
+window.scrollTo(0,0);//滚动条回到顶端
+$("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>进件管理</div>"+  
+                    "<div class='content'>" +
+                        "<div class='jjstep'>" +
+                            "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
+                            "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
+                            "<div class='step3'>在线拍照</div>"+
+                            "<div class='step2'>确认调查照</div>"+
+                            "<div class='step2'>调查模板导入</div>"+
+                        "</div><div class='line'></div>"+
+                       "<div class='bottom-content'>"+
+                            "<div class='box jjgl' id = 'diaocmb' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+                            "<input type='hidden' id='qtyxzl_sheet1' name='imageuri' uri='' class='readonly' readonly='readonly'/>"+
+                            "<img src='images/ugc_icon_type_photo.png' id='jycs' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"1\");'/>" +
+                                "<span>经营场所</span>"+
+                            "</div>"+
+                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                                "<img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"2\");'/>" +
+                                "<span>经营权属</span>"+
+                            "</div>"+
+                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                            "<img src='images/ugc_icon_type_photo.png' id='jydj' />" +
+                            "<span>经营单据</span>"+
+                        "</div>"+
+                        "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                        "<img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"6\");'/>" +
+                        "<span>其他收入</span>"+
+                    "</div>"+
+                    "</div>"+
+                    "<div class='bottom-content'>"+
+                    "<div class='box jjgl' id = 'diaocmb' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+                    "<input type='hidden' id='qtyxzl_sheet1' name='imageuri' uri='' class='readonly' readonly='readonly'/>"+
+                    "<img src='images/ugc_icon_type_photo.png' id='jycs' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"7\");'/>" +
+                        "<span>身份证明</span>"+
+                    "</div>"+
+                    "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                        "<img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"8\");'/>" +
+                        "<span>个人资产</span>"+
+                    "</div>"+
+                    "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                    "<img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"9\");'/>" +
+                    "<span>家访</span>"+
+                "</div>"+
+                "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                "<img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"10\");'/>" +
+                "<span>担保</span>"+
+            "</div>"+
+						"</div>"+
+						  "<div class='bottom-content'><p>"+
+						"<input type='button' class='btn btn-large btn-primary' value='下一步' id = 'xyb'/>"+
+						 "</div></p>"+
+				"</div>");
+    $(".right").hide();
+    $("#mainPage").show();
+	$("#mjjgl2").click(function(){
+		var productInfo={};
+		productInfo.productId = addIntopiece.productId;
+		productInfo.productName = addIntopiece.productName;
+		myjjgl2(productInfo);
+		capture();
+	});
+	$("#xyb").click(function(){
+		newUser9 (addIntopiece);
+	});
+	
+	$("#jydj").click(function(){
+		window.scrollTo(0,0);//滚动条回到顶端
+		$("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>进件管理</div>"+  
+		                    "<div class='content'>" +
+		                        "<div class='jjstep'>" +
+		                            "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
+		                            "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
+		                            "<div class='step3'>在线拍照</div>"+
+		                            "<div class='step3'>经营场所照</div>"+
+		                            "<div class='step2'>确认调查照</div>"+
+		                            "<div class='step2'>调查模板导入</div>"+
+		                        "</div><div class='line'></div>"+
+		                    "<div class='bottom-content'>"+
+		                    "<div class='box jjgl' id = 'diaocmb' style='margin-left:200px;margin-right:100px;display:inline-block;'>" +
+		                    "<input type='hidden' id='qtyxzl_sheet1' name='imageuri' uri='' class='readonly' readonly='readonly'/>"+
+		                    "<img src='images/ugc_icon_type_photo.png' id='jycs' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"3\");'/>" +
+		                        "<span>逻辑检查</span>"+
+		                    "</div>"+
+		                    "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:100px;'>" +
+		                        "<img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"4\");'/>" +
+		                        "<span>资产负债</span>"+
+		                    "</div>"+
+		                    "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:100px;'>" +
+		                    "<img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\",\"5\");'/>" +
+		                    "<span>损益</span>"+
+		                "</div>"+
+								"</div>"+
+								  "<div class='bottom-content'><p>"+
+								"<input type='button' class='btn btn-large btn-primary' value='返回' id = 'xyb'/>"+
+								 "</div></p>"+
+						"</div>");
+		    $(".right").hide();
+		    $("#mainPage").show();
+		    $("#xyb").click(function(){
+		    	UserNew(addIntopiece);
+			});
+		    $("#mjjgl2").click(function(){
+		    	UserNew(addIntopiece);
+		    });
+	});
+}
+
+
+function newUser9 (addIntopiece){
+	var objs;
+	 var yxzlur1l="/ipad/JnpadImageBrowse/findLocalImageByType1.json";
+	$.get(wsHost+yxzlur1l,{customerId:addIntopiece.customerId,productId:addIntopiece.productId},callbackfunction);
+	function  callbackfunction (json){
+		objs = $.evalJSON(json);
+window.scrollTo(0,0);//滚动条回到顶端
+$("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>进件管理</div>"+  
+                    "<div class='content'>" +
+                        "<div class='jjstep'>" +
+                            "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
+                            "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
+                            "<div class='step3'>调查照</div>"+
+                            "<div class='step3'>确认调查照</div>"+
+                            "<div class='step2'>调查模板导入</div>"+
+                        "</div><div class='line'></div>"+
+                       "<div class='bottom-content'>"+
+                            "<div class='box jjgl' id = 'diaocmb' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+                            "<img src='images/wenjian.png' id='jycs' />" +
+                                "<span>经营场所</span><br/>"+
+                                "<span class='tongzhi'>"+objs.size1+"</span>"+
+                            "</div>"+
+                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                            "<img src='images/wenjian.png' id='jyqs' />" +
+                            "<span>经营权属</span>"+
+                            "<span class='tongzhi'>"+objs.size2+"</span>"+
+                            "</div>"+
+                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                            "<img src='images/wenjian.png' id='jydj' />" +
+                            "<span>经营单据</span>"+
+                            "<span class='tongzhi'>"+(objs.size3+objs.size4+objs.size5)+"</span>"+
+                        "</div>"+
+                        "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                        "<img src='images/wenjian.png' id='qtsr' />" +
+                        "<span>其他收入</span>"+
+                        "<span class='tongzhi'>"+objs.size6+"</span>"+
+                    "</div>"+
+                    "</div>"+
+                    "<div class='bottom-content'>"+
+                    "<div class='box jjgl' id = 'diaocmb' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+                    "<img src='images/wenjian.png' id='sfzm' />" +
+                        "<span>身份证明</span>"+
+                        "<span class='tongzhi'>"+objs.size7+"</span>"+
+                    "</div>"+
+                    "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                    "<img src='images/wenjian.png' id='grzc' />" +
+                        "<span>个人资产</span>"+
+                        "<span class='tongzhi'>"+objs.size8+"</span>"+
+                    "</div>"+
+                    "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                    "<img src='images/wenjian.png' id='jf' />" +
+                    "<span>家访</span>"+
+                    "<span class='tongzhi'>"+objs.size9+"</span>"+
+                "</div>"+
+                "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+                "<img src='images/wenjian.png' id='db' />" +
+                "<span>担保</span>"+
+                "<span class='tongzhi'>"+objs.size10+"</span>"+
+            "</div>"+
+						"</div>"+
+						  "<div class='bottom-content'><p>"+
+						"<input type='button' class='btn btn-large btn-primary' value='下一步' id = 'xyb'/>"+
+						 "</div></p>"+
+				"</div>");
+    $(".right").hide();
+    $("#mainPage").show();
+	$("#xyb").click(function(){
+		dcmbadd(addIntopiece);
+	});
+	
+	$("#mjjgl2").click(function(){
+		newUser6 (addIntopiece);
+	});
+	$("#jycs").click(function(){
+		var phone_type=1;
+		deleteIma(addIntopiece,phone_type);
+	});$("#jyqs").click(function(){
+		var phone_type=2;
+		deleteIma(addIntopiece,phone_type);
+	});$("#qtsr").click(function(){
+		var phone_type=6;
+		deleteIma(addIntopiece,phone_type);
+	});$("#sfzm").click(function(){
+		var phone_type=7;
+		deleteIma(addIntopiece,phone_type);
+	});$("grzc").click(function(){
+		var phone_type=8;
+		deleteIma(addIntopiece,phone_type);
+	});$("#jf").click(function(){
+		var phone_type=9;
+		deleteIma(addIntopiece,phone_type);
+	});$("#db").click(function(){
+		var phone_type=10;
+		deleteIma(addIntopiece,phone_type);
+	});
+	
+$("#jydj").click(function(){
+	window.scrollTo(0,0);//滚动条回到顶端
+	$("#mainPage").html("<div class='title' id='mjjgl2'>经营权属</div>"+  
+	                    "<div class='content'>" +
+	                        "<div class='jjstep'>" +
+	                            "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
+	                            "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
+	                            "<div class='step3'>调查照</div>"+
+	                            "<div class='step3'>确认调查照</div>"+
+	                            "<div class='step3'>经营权属</div>"+
+	                            "<div class='step2'>调查模板导入</div>"+
+	                        "</div><div class='line'></div>"+
+	                       "<div class='bottom-content'>"+
+	                            "<div class='box jjgl' id = 'diaocmb' style='margin-left:200px;margin-right:100px;display:inline-block;'>" +
+	                            "<img src='images/wenjian.png' id='ljjc' />" +
+	                                "<span>逻辑检查</span><br/>"+
+	                                "<span class='tongzhi'>"+objs.size3+"</span>"+
+	                            "</div>"+
+	                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:100px;'>" +
+	                            "<img src='images/wenjian.png' id='zcfz' />" +
+	                            "<span>资产负债</span>"+
+	                            "<span class='tongzhi'>"+objs.size4+"</span>"+
+	                            "</div>"+
+	                        "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:100px;'>" +
+	                        "<img src='images/wenjian.png' id='sy' />" +
+	                        "<span>损益</span>"+
+	                        "<span class='tongzhi'>"+objs.size5+"</span>"+
+	                    "</div>"+
+	                    "</div>"+
+							  "<div class='bottom-content'><p>"+
+							"<input type='button' class='btn btn-large btn-primary' value='返回' id = 'xyb'/>"+
+							 "</div></p>"+
+					"</div>");
+	    $(".right").hide();
+	    $("#mainPage").show();
+	    $("#xyb").click(function(){
+	    	newUser9 (addIntopiece);
+		});
+		$("#ljjc").click(function(){
+			var phone_type=3;
+			deleteIma(addIntopiece,phone_type);
+		});$("#zcfz").click(function(){
+			var phone_type=4;
+			deleteIma(addIntopiece,phone_type);
+		});$("#sy").click(function(){
+			var phone_type=5;
+			deleteIma(addIntopiece,phone_type);
+		});
+	});
+}}
+var phoneTYPE;
+function aa(phoneIma,phone_type){
+	phoneTYPE=phone_type;
+	var applicationId = null;
+	 var fileURI = document.getElementsByName("imageuri")[0].getAttribute("uri");
+	 var fileName = phoneIma;
+	 var options = new FileUploadOptions();  
+	    options.fileKey = "file";  
+	    options.fileName = fileName; 
+	    options.mimeType = "multipart/form-data";  
+	    options.chunkedMode = false;  
+	    ft = new FileTransfer();  
+	    var uploadUrl=encodeURI(wsHost+"/ipad/addIntopieces/imageImport.json?productId="+a.productId+"&customerId="+a.customerId+"&fileName="+options.fileName+"&applicationId="+applicationId+"&phone_type="+phone_type);  
+	    ft.upload(fileURI,uploadUrl,uploadSuccess1, uploadFailed, options); 
+}
+
+function deleteIma(addIntopiece,phone_type){
+	var yxzlurl="/ipad/JnpadImageBrowse/findLocalImageByType.json";
+	var obj;
+	var id;
+	var page = 0;
+	var lltpurl;
+	$.get(wsHost+yxzlurl,{customerId:addIntopiece.customerId,productId:addIntopiece.productId,phone_type:phone_type},callbackfunction);
+		function  callbackfunction (json){
+			obj = $.evalJSON(json);
+			if(obj.size==0){
+				alert('暂无照片!!');
+				newUser1(addIntopiece);
+			}else{
+				id=obj.imagerList[0].id;
+				lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
+				
+				
+				$("#mainPage").html("<div class='title'><img src='images/back.png' id='backk'/>查看/更改照片</div>"+
+						"<div class='content'>" +
+						"<div class='tabplace' id='imageBrowse' style='text-align:center;margin:0 auto;'>图片加载中..." +
+						"</div>"+
+						"<p><input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
+								"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
+								"<input type='button' class='btn btn-large btn-primary' value='删除' id = 'delete'/>"+
+								//"<input type='button' class='btn btn-large btn-primary' value='查看原图' id = 'ckyt'/>"+
+								//"<input type='button' class='btn btn-large' value='返回' ondblclick='"+res.currentLoc+" /></p>"+
+				"</div>");
+				$(".right").hide();
+				$("#mainPage").show();
+				$("#imageBrowse").html(
+						"<img id ='images' width='500px' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
+				);
+				$("#backk").click(function(){
+					newUser9 (addIntopiece);
+				})
+					$("#delete").click(function(){
+						var deletetpurl ="/ipad/JnpadImageBrowse/deleteImage.json";
+						  $.ajax({
+								url:wsHost+deletetpurl,
+								type: "GET",
+								dataType:'json',
+								data:{
+									imageId:id,
+								},
+								cache:false,
+								success: function (json){
+									var obj = $.evalJSON(json);
+									alert(obj.mess);
+									deleteIma(addIntopiece,phone_type);
+								}
+						  })  
+					})
+				$("#ckyt").click(function(){
+					var values=$("#ckyt").val();
+					var xx="查看原图";
+					var xxx="查看小图";
+					if(values==xx){
+						
+					$("#imageBrowse").html(
+							"<img id ='images' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
+					);
+					$("#ckyt").val("查看小图");
+					}else if(values==xxx){
+						$("#imageBrowse").html(
+								"<img id ='images' width='500px' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
+						);
+						$("#ckyt").val("查看原图");
+					}
+				})
+				
+				$("#syy").click(function(){
+					
+					page=page-1; 
+					if(page>=0){
+						id=obj.imagerList[page].id
+						lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
+						$("#imageBrowse").html(
+								"<img id ='images' style='text-align:center' width='500px' src='"+wsHost+lltpurl+"' alt=''/>"
+						);
+					}else{
+						alert("当前已经是第一页");
+						page = page+1;
+					}
+				})
+				
+				$("#xyy").click(function(){
+					
+					page=page+1; 
+					if(page<obj.size){
+						id=obj.imagerList[page].id
+						lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
+						$("#imageBrowse").html(
+								"<img id ='images' width='500px' height='500px'  src='"+wsHost+lltpurl+"' alt=''/>"
+						);
+					}else{
+						alert("当前已经是最后一页");
+						page = page-1;
+					}
+				});
+			}
+		
+	
+		}
+}
+
+function sureIma(addIntopiece){
+	var objs;
+	 var phone_type=2;
+	 var yxzlur1l="/ipad/JnpadImageBrowse/findLocalImageByType.json";
+	$.get(wsHost+yxzlur1l,{customerId:addIntopiece.customerId,productId:addIntopiece.productId,phone_type:phone_type},callbackfunction);
+	function  callbackfunction (json){
+		objs = $.evalJSON(json);
+	window.scrollTo(0,0);//滚动条回到顶端
+	$("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>进件管理</div>"+  
+	                    "<div class='content'>" +
+	                        "<div class='jjstep'>" +
+	                            "<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
+	                            "<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
+	                            "<div class='step3' id='khzj'>客户证件照</div>"+
+	                            "<div class='step3'>场景照片</div>"+
+	                            "<div class='step2'>其他照片</div>"+
+	                            "<div class='step2'>调查模板导入</div>"+
+	                        "</div><div class='line'></div>"+
+	                      /*  "<div class='bottom-content'>"+
+	                            "<div class='box jjgl' id = 'diaocmb' style='margin-left:400px;margin-right:50px;display:inline-block;'>" +
+	                                "<img src='images/xxzl.png'/>" +
+	                                "<span>客户信息调查模板</span>"+
+	                            "</div>"+
+	                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;'>" +
+	                                "<img src='images/yxzl.png' />" +
+	                                "<span>客户影像资料采集</span>"+
+	                            "</div>"+
+							"</div>"+*/
+	                        "<div class='bottom-content'>"+
+							"<table id='qtyxzl' class='cpTable' style='text-align:center;margin-top:20px;'>"+
+								"<tr>"+    
+									"<th style='width:40px;'>序号</th>"+ 
+									"<th>文件路径</th>"+
+									"<th>操作</th>"+
+								"</tr>"+
+								"<tr>"+  
+								"<td>1</td>"+
+								"<td><input type='text' id='qtyxzl_sheet1' name='imageuri' uri='' class='readonly' readonly='readonly'/><input type='button' class='btn' onclick='getMedia(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\");' value='选择文件'/></td>"+
+//								"<td><img src='images/ugc_icon_type_photo.png' id ='takepucture'/></td>"+
+								"<td><img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\");'/></td>"+
+							"</tr>"+
+						
+						
+							"</table>"+
+							"<p class='Left'>" +
+							"<button class='add-button' onclick='addTd(\"qtyxzl\")'><img src='images/add.png'/></button>" +
+							"<button class='add-button' onclick='removeTd(\"qtyxzl\")'><img src='images/del.png'/></button>" +
+							"</p>"+
+							"<p>" +
+							"<input type='button' class='btn btn-primary btn-large' value='下一步' id='next' />" +
+							"<input type='button' class='btn btn-primary btn-large' value='上传客户证件照' id='sure' />" +
+							"<input type='button' class='btn btn-primary btn-large' value='已上传客户证件照' id='cksc' /></br><span class='tongzhi'>"+objs.size+"</br></span>" +
+							"</p>"+
+						"</div>"+
+					"</div>");
+	    $(".right").hide();
+	    $("#mainPage").show();
+	    $("#next").click(function(){
+	    	//$("#next").attr("disabled",true);
+	    	if(objs.size>0){
+	    		newUser3(addIntopiece);
+	    	}else{
+	    		alert('请上传场景照片!!');
+	    	}
+	    });
+	     $("#cksc").click(function(){
+    	deleteIma(addIntopiece,phone_type);
+	     });
+	     $("#khzj").click(function(){
+	    	 newUser1(addIntopiece);
+	    })
+	    $("#sure").click(function(){
+	    	alert($('#qtyxzl_sheet1').val());
+	  	  var applicationId = null;
+	  	  var num= $('#qtyxzl tr').length;
+	  	  for(var i=0;i<num;i++){
+	  	 var fileURI = document.getElementsByName("imageuri")[i].getAttribute("uri");
+	  	 var j=i+1;
+	  	 var fileName = $("#qtyxzl_sheet"+j).val();
+	  	 var phone_type=2;
+	  	 var options = new FileUploadOptions();  
+	  	    options.fileKey = "file";  
+	  	    options.fileName = fileName; 
+	  	    options.mimeType = "multipart/form-data";  
+	  	    options.chunkedMode = false;  
+	  	    ft = new FileTransfer();  
+	  	  var uploadUrl=encodeURI(wsHost+"/ipad/addIntopieces/imageImport.json?productId="+addIntopiece.productId+"&customerId="+addIntopiece.customerId+"&fileName="+options.fileName+"&applicationId="+applicationId+"&phone_type="+phone_type); 
+	  	  ft.upload(fileURI,uploadUrl,uploadSuccess2, uploadFailed, options); 
+	  	  }
+	    })
+	    $("#khxxlb").click(function(){
+	    	
+	    	myjjgl2(addIntopiece);
+	    })
+	    $("#mjjgl2").click(function(){
+	    	
+	    	newUser1(addIntopiece);
+	    })
+
+	}}
+
+var allzi;
 //调查模板 
 function dcmbadd(addIntopiece){
+	allzi=addIntopiece;
 	window.scrollTo(0,0);//滚动条回到顶端
 	$("#mainPage").html("<div class='title' id='newUsers1'><img src='images/back.png'/>调查模板采集</div>"+  
 			"<div class='content' style='text-align:center;'>" +  
 			"<div class='jjstep'>" +
-			"<div class='step1' onclick='myjjgl()'>"+addIntopiece.productName+"</div>"+
-			"<div class='step3' id='khxxlb'>"+addIntopiece.chineseName+"</div>"+
-			"<div class='step3' id='newUser1'>客户影像资料采集</div>"+
-			"<div class='step3'>信息录入</div>"+
+			   "<div class='step1' >"+addIntopiece.productName+"</div>"+
+               "<div class='step3' >"+addIntopiece.chineseName+"</div>"+
+               "<div class='step3'>调查照</div>"+
+               "<div class='step3'>确认调查照</div>"+
+               "<div class='step3'>调查模板导入</div>"+
 			"<input type='button' class='btn btn-large btn-primary next' value='确定' id='sure'/>" +
 			"</div><div class='line'></div>"+
 			"<div class='bottom-content'>"+
@@ -531,7 +1264,15 @@ function dcmbadd(addIntopiece){
 	"</div>");
 	$(".right").hide();
 	$("#mainPage").show();
-	
+	 $("#cjz").click(function(){
+	    	newUser2(addIntopiece);
+	    })
+	     $("#khzj").click(function(){
+	    	 newUser1(addIntopiece);
+	    })
+	    $("#qtz").click(function(){
+	    	 newUser3(addIntopiece);
+	    })
 	document.addEventListener("deviceready", function(){  
 	    $(function(){  
 	         $('#upload_file_link').click(openFileSelector);  
@@ -569,13 +1310,8 @@ function dcmbadd(addIntopiece){
 		    	
 		    	newUser1(addIntopiece);
 		    })
-		    $("#newUser1").click(function(){
-    	
-		    	newUser1(addIntopiece);
-		    })
 		    $("#newUsers1").click(function(){
-		    	
-		    	newUser1(addIntopiece);
+		    	newUser9(addIntopiece);
 		    })
 	
 }
@@ -599,11 +1335,11 @@ $("#mainPage").html("<div class='title' id='newUsers1'><img src='images/back.png
 									"<th>操作</th>"+
 								"</tr>"+
 								"<tr>"+  
-									"<td>1</td>"+
-									"<td><input type='text' id='qtyxzl_sheet1' name='imageuri' uri='' class='readonly' readonly='readonly'/><input type='button' class='btn' onclick='getMedia(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\");' value='选择文件'/></td>"+
-									"<td><img src='images/ugc_icon_type_photo.png' id ='takepucture'/></td>"+
-//									"<td><img src='images/ugc_icon_type_photo.png' onclick='capturePhoto(\"fcz_sheet1\",\"img\",\"imageuri\");'/></td>"+
-								"</tr>"+
+								"<td>1</td>"+
+								"<td><input type='text' id='qtyxzl_sheet1' name='imageuri' uri='' class='readonly' readonly='readonly'/><input type='button' class='btn' onclick='getMedia(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\");' value='选择文件'/></td>"+
+//								"<td><img src='images/ugc_icon_type_photo.png' id ='takepucture'/></td>"+
+								"<td><img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet1\",\"img\",\"imageuri\",\"1\");'/></td>"+
+							"</tr>"+
 							"</table>"+
 							"<p class='Left'>" +
 							"<button class='add-button' onclick='addTd(\"qtyxzl\")'><img src='images/add.png'/></button>" +
@@ -798,7 +1534,7 @@ function getsuccess(URI){
 				url.value = fpath;
 				URI="file://"+fpath;
 				var lll= document.getElementsByName("imageuri")[0].setAttribute("uri",URI);
-				//alert(json);
+				alert('456');
 //			}
 			function testError(){
 				alert("error");
@@ -850,6 +1586,7 @@ function uploadProcessing(progressEvent){
  * @param r 
  */ 
 function uploadSuccess(r) { 
+	var objjs;
 	var obj = $.evalJSON(r.response);
 	if(obj.success==false){
 	if(obj.message=="001"){
@@ -861,7 +1598,103 @@ function uploadSuccess(r) {
 	}
 	}else{
 		alert("导入成功！");
-		pglr();
+		var url="/ipad/selectAllCustomerApprais.json?cardid="+cardId;
+		$.ajax({
+			url:wsHost + url,
+			type: "GET",
+			dataType:'json',
+			async: false,
+			success: function (json) {
+				objjs = $.evalJSON(json);
+				if(objjs.result!=null){
+					tosqjj(allzi);
+				}else{
+					pglr(allzi);
+				}
+			}})
+	}
+    clearProcess();  
+} 
+/** 
+ * 客户证件上传成功回调. 
+ * @param r 
+ */ 
+function uploadSuccess1(r) { 
+	var obj = $.evalJSON(r.response);
+	if(obj.success==false){
+	if(obj.message=="001"){
+		alert("调查模板不一致！导入失败！");
+		 $("#sure").attr('disabled',false);
+	}else{
+		alert("导入失败！");
+    $("#sure").attr('disabled',false);
+	}
+	}else{
+		alert("oooooyeah！");
+		if(phoneTYPE==1){
+			capture("qtyxzl_sheet1","img","imageuri","1","1");
+		}else if(phoneTYPE==2){
+			capture("qtyxzl_sheet1","img","imageuri","1","2");
+		}else if(phoneTYPE==3){
+			capture("qtyxzl_sheet1","img","imageuri","1","3");
+		}else if(phoneTYPE==4){
+			capture("qtyxzl_sheet1","img","imageuri","1","4");
+		}else if(phoneTYPE==5){
+			capture("qtyxzl_sheet1","img","imageuri","1","5");
+		}else if(phoneTYPE==6){
+			capture("qtyxzl_sheet1","img","imageuri","1","6");
+		}else if(phoneTYPE==7){
+			capture("qtyxzl_sheet1","img","imageuri","1","7");
+		}else if(phoneTYPE==8){
+			capture("qtyxzl_sheet1","img","imageuri","1","8");
+		}else if(phoneTYPE==9){
+			capture("qtyxzl_sheet1","img","imageuri","1","9");
+		}else if(phoneTYPE==10){
+			capture("qtyxzl_sheet1","img","imageuri","1","10");
+		}
+	  	
+	}
+    clearProcess();  
+}  
+/** 
+ * 客户证件上传成功回调. 
+ * @param r 
+ */ 
+function uploadSuccess2(r) { 
+	var obj = $.evalJSON(r.response);
+	if(obj.success==false){
+	if(obj.message=="001"){
+		alert("调查模板不一致！导入失败！");
+		 $("#sure").attr('disabled',false);
+	}else{
+		alert("导入失败！");
+    $("#sure").attr('disabled',false);
+	}
+	}else{
+		alert("导入成功！");
+	  	newUser2(a);
+	  	
+	}
+    clearProcess();  
+}  
+/** 
+ * 客户证件上传成功回调. 
+ * @param r 
+ */ 
+function uploadSuccess3(r) { 
+	var obj = $.evalJSON(r.response);
+	if(obj.success==false){
+	if(obj.message=="001"){
+		alert("调查模板不一致！导入失败！");
+		 $("#sure").attr('disabled',false);
+	}else{
+		alert("导入失败！");
+    $("#sure").attr('disabled',false);
+	}
+	}else{
+		alert("导入成功！");
+	  	newUser3(a);
+	  	
 	}
     clearProcess();  
 }  
@@ -905,7 +1738,7 @@ function hide_upload(){//隐藏登出提示
 
 
 //额度评估工具
-function pglr(){
+function pglr(allzi){
 	
 window.scrollTo(0,0);//滚动条回到顶端
 $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>进件管理--进件申请--额度评估</div>"+  
@@ -1168,7 +2001,11 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 			                "</div>");
 			$(".right").hide();
 			$("#mainPage").show();
+			  $("#back").click(function(){
+				  dcmbadd(addIntopiece) ;
+			  })
 			    $("#sure").click(function(){
+			    	 $("#sure").attr('disabled',"true");
 			    	var chinesename=allobj.chineseName
 			    	var cardid=allobj.cardId;
 			    	var khdysr=$("#khdysr").val();
@@ -1213,11 +2050,10 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 							hyzk:hyzk,hjzk:hjzk,jycd:jycd,zgzs:zgzs,zc:zc,age:age,jkqk:jkqk,ggjl:ggjl,
 							zw:zw,grsr:grsr,zwsrb:zwsrb,syrk:syrk,tjr:tjr,khjlzgyx:khjlzgyx,khdysr:khdysr,cykh:cykh,zf:zf,jyed:jyed,pfdj:pfdj},
 						success: function (json) {
-							alert(json);
+						
 							obj = $.evalJSON(json);
 							if(obj.a>0){
-								alert('上传成功!');
-								myjjgl();
+								tosqjj(allzi);
 							}else{
 								alert('上传失败!');
 								pglr(allobj);
@@ -1301,4 +2137,18 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 			    	}if(id=='radio19'){
 			    		tjr=str;
 			    	}
-			    }
+			    
+}
+			    function tosqjj(allzi){
+			    	var khwhurl="/ipad/jnnaddIntopieces/tjsq.json"
+			    	var userId = window.sessionStorage.getItem("userId");
+			    	$.ajax({
+			    		url:wsHost + khwhurl,
+			    		type: "GET",
+			    		dataType:'json',
+			    		data:{productId:allzi.productId,userId:userId,customerId:allzi.customerId},
+			    		success: function (json) {
+			    			obj = $.evalJSON(json);
+			    			alert(obj.message);
+			    			myjjgl();
+			    		}})}
