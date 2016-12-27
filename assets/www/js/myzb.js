@@ -29,7 +29,7 @@ function zbjjlb(){
 	"<th>证件类型</th>"+
 	"<th>证件号码</th>"+
 	"<th>手机</th>"+
-	"<th>是否可以抢单</th>"+
+	//"<th>是否可以抢单</th>"+
 	"</tr>";  
 	var qd;
 	var get = crud.dom.factory("GET");
@@ -64,7 +64,7 @@ function zbjjlb(){
 				"<td>"+obj.list[i].cardType+"</td>"+
 				"<td>"+obj.list[i].cardId+"</td>"+
 				"<td>"+obj.list[i].telephone+"</td>"+
-				qd+
+				//qd+
 				"</tr>"
 
 				if((i+1)%5==0){

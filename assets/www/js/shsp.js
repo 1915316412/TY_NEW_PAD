@@ -1,6 +1,7 @@
 
 //审核审批
 function myshsp(){
+
 	var userType = window.sessionStorage.getItem("userType");
 	var shspshow;
 	var show1 = "<div class='box shsp1' onclick='cysdrw()'>" +                            
@@ -15,7 +16,7 @@ function myshsp(){
 	"<div class='box shsp2' onclick='rysp1()'>" +
 	"<span>融耀卡复审</span>"+
 	"</div>";
-	var show2 = "<div class='box shsp1' onclick='buzhangsp()'>" +
+	/*var show2 = "<div class='box shsp1' onclick='buzhangsp()'>" +
 	"<span>部长审批</span>"+
 	"</div>"+
 	"<div class='box shsp2' onclick='lsywbfzrsp()'>" +
@@ -23,12 +24,10 @@ function myshsp(){
 	"</div>"+
 	"<div class='box shsp1' onclick='hzsp()'>" +
 	"<span>行长审批</span>"+
-	"</div>";
-	if(Number(userType)!=1){
-		shspshow = show1+show2;
-	}else{
+	"</div>";*/
+	
 		shspshow=show1;
-	}
+	
 	window.scrollTo(0,0);//滚动条回到顶端
 	$("#mainPage").html("<div class='title'>审核审批</div>"+  
 			"<div class='content'>" +
@@ -176,7 +175,9 @@ function rysp1(){
 					res.productId =values[0];
 					res.applicationId =values[3];
 					res.currentLoc ="sdjy()";
-					xsyxzlcx1(res);
+					var ryk1=2;
+					var ryk2=2;
+					yxzl11111(res,ryk2);
 				}else{
 					alert("请选择一行");
 				}
@@ -188,96 +189,7 @@ function rysp1(){
 	})
 
 }
-//影像资料
-function xsyxzlcx1(res){
-	var yxzlurl="/ipad/JnpadImageBrowse/uploadYx.json";
-	var obj;
-	var id;
-	var page = 0;
-	var lltpurl;
-//	$.ajax({
-//		url:wsHost+yxzlurl,
-//		type: "GET",
-//		dataType:'json',
-//		data:{
-//			customerId:res.customerId,
-//		},
-//		success: 
-	$.get(wsHost+yxzlurl,{customerId:res.customerId,productId:res.productId,applicationId:res.applicationId},callbackfunction);
-		function  callbackfunction (json){
-			obj = $.evalJSON(json);
-			id=obj.imagerList[0].id;
-			lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
-			
-		
-	$("#mainPage").html("<div class='title'><img src='images/back.png' id='backk'/>影像资料</div>"+
-			"<div class='content'>" +
-			"<div class='tabplace' id='imageBrowse' style='text-align:center;margin:0 auto;'>图片加载中..." +
-			"</div>"+
-			"<p><input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
-					"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
-					"<input type='button' class='btn btn-large btn-primary' value='查看原图' id = 'ckyt'/>"+
-					//"<input type='button' class='btn btn-large' value='返回' ondblclick='"+res.currentLoc+" /></p>"+
-	"</div>");
-	$(".right").hide();
-	$("#mainPage").show();
-	$("#imageBrowse").html(
-			"<img id ='images' width='500px' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
-	);
-	$("#backk").click(function(){
-		rysp1();
-	})
-	$("#ckyt").click(function(){
-		var values=$("#ckyt").val();
-		var xx="查看原图";
-		var xxx="查看小图";
-		if(values==xx){
-			
-		$("#imageBrowse").html(
-				"<img id ='images' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
-		);
-		$("#ckyt").val("查看小图");
-		}else if(values==xxx){
-			$("#imageBrowse").html(
-					"<img id ='images' width='500px' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
-			);
-			$("#ckyt").val("查看原图");
-		}
-	})
-	
-	$("#syy").click(function(){
-		
-		page=page-1; 
-		if(page>=0){
-			id=obj.imagerList[page].id
-			lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
-			$("#imageBrowse").html(
-					"<img id ='images' style='text-align:center' width='500px' src='"+wsHost+lltpurl+"' alt=''/>"
-			);
-		}else{
-			alert("当前已经是第一页");
-			page = page+1;
-		}
-	})
-	
-	$("#xyy").click(function(){
-		
-		page=page+1; 
-		if(page<obj.size){
-			id=obj.imagerList[page].id
-			lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
-			$("#imageBrowse").html(
-					"<img id ='images' width='500px' height='500px'  src='"+wsHost+lltpurl+"' alt=''/>"
-			);
-		}else{
-			alert("当前已经是最后一页");
-			page = page-1;
-		}
-	});
-	
-		}
-//	})
-}
+
 //融耀卡审批
 function rysp(){
 	var sdrwurl= "/ipad/intopieces/csBrowse.json";
@@ -301,7 +213,7 @@ function rysp(){
 		dataType:'json',
 		data:{
 			userId:userId,
-			nextNodeName:"融耀卡初审",
+			nextNodeName:"融耀卡审批",
 		},
 		success: function (json){
 			var obj = $.evalJSON(json);
@@ -409,7 +321,9 @@ function rysp(){
 					res.productId =values[0];
 					res.applicationId =values[3];
 					res.currentLoc ="cysdrw()";
-					xsyxzlcx11(res);
+					var ryk1=1;
+					var ryk2=1;
+					yxzl11111(res,ryk1,ryk2);
 				}else{
 					alert("请选择一行");
 				}
@@ -422,97 +336,155 @@ function rysp(){
 
 }
 //影像资料
-function xsyxzlcx11(res){
-	var yxzlurl="/ipad/JnpadImageBrowse/uploadYx.json";
+function yxzl11111(res,ryk1,ryk2){
+	 var objs;
+	 var yxzlur1l="/ipad/JnpadImageBrowse/findLocalImageByType1.json";
+		$.get(wsHost+yxzlur1l,{customerId:res.customerId,productId:res.productId},callbackfunction);
+		function  callbackfunction (json){
+			objs = $.evalJSON(json);
+	window.scrollTo(0,0);//滚动条回到顶端
+	$("#mainPage").html("<div class='title' id='back'><img src='images/back.png'/>上会影像资料审核</div>"+  
+			  "<div style='padding-top:20px'>" +
+			 "<div class='bottom-content'>"+
+			 "<div class='box jjgl' id = 'diaocmb' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+             "<img src='images/wenjian.png' id='jycs' />" +
+                 "<span>经营场所</span><br/>"+
+                 "<span class='tongzhi'>"+objs.size1+"</span>"+
+             "</div>"+
+             "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+             "<img src='images/wenjian.png' id='jyqs' />" +
+             "<span>经营权属</span>"+
+             "<span class='tongzhi'>"+objs.size2+"</span>"+
+             "</div>"+
+             "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+             "<img src='images/wenjian.png' id='jydj' />" +
+             "<span>经营单据</span>"+
+             "<span class='tongzhi'>"+(objs.size3+objs.size4+objs.size5)+"</span>"+
+         "</div>"+
+         "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+         "<img src='images/wenjian.png' id='qtsr' />" +
+         "<span>其他收入</span>"+
+         "<span class='tongzhi'>"+objs.size6+"</span>"+
+     "</div>"+
+     "</div>"+
+     "<div class='bottom-content'>"+
+     "<div class='box jjgl' id = 'diaocmb' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+     "<img src='images/wenjian.png' id='sfzm' />" +
+         "<span>身份证明</span>"+
+         "<span class='tongzhi'>"+objs.size7+"</span>"+
+     "</div>"+
+     "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+     "<img src='images/wenjian.png' id='grzc' />" +
+         "<span>个人资产</span>"+
+         "<span class='tongzhi'>"+objs.size8+"</span>"+
+     "</div>"+
+     "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+     "<img src='images/wenjian.png' id='jf' />" +
+     "<span>家访</span>"+
+     "<span class='tongzhi'>"+objs.size9+"</span>"+
+ "</div>"+
+ "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+ "<img src='images/wenjian.png' id='db' />" +
+ "<span>担保</span>"+
+ "<span class='tongzhi'>"+objs.size10+"</span>"+
+"</div>"+
+"</div>"+
+"</div>"+
+"</div>");
+	$(".right").hide();
+	$("#mainPage").show(); 
+	 $("#back").click(function(){
+		 if(ryk1==1){
+			 rysp();  
+		 }else if((ryk1==2)){
+			 rysp1();  
+		 }
+	 });
+	  $("#jycs").click(function(){ 
+		  var phone_type=1;
+		  lllll(res,phone_type);
+	  });
+	  $("#jyqs").click(function(){
+		  var phone_type=2;
+		  lllll(res,phone_type);
+	  });
+	  $("#qtsr").click(function(){
+		  var phone_type=6;
+		  lllll(res,phone_type);
+	  });
+	  $("#sfzm").click(function(){
+		  var phone_type=7;
+		  lllll(res,phone_type);
+	  });
+	  $("#grzc").click(function(){
+		  var phone_type=8;
+		  lllll(res,phone_type);
+	  });
+	  $("#jf").click(function(){
+		  var phone_type=9;
+		  lllll(res,phone_type);
+	  });
+	  $("#db").click(function(){
+		  var phone_type=10;
+		  lllll(res,phone_type);
+	  });
+	  $("#jydj").click(function(){
+		  window.scrollTo(0,0);//滚动条回到顶端
+			$("#mainPage").html("<div class='title' id='mjjgl2' ><img src='images/back.png'/>经营权属</div>"+  
+			                    "<div style='padding-top:20px'>" +
+			                       "<div class='bottom-content'>"+
+			                            "<div class='box jjgl' id = 'diaocmb' style='margin-left:200px;margin-right:100px;display:inline-block;'>" +
+			                            "<img src='images/wenjian.png' id='ljjc' />" +
+			                                "<span>逻辑检查</span><br/>"+
+			                                "<span class='tongzhi'>"+objs.size3+"</span>"+
+			                            "</div>"+
+			                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:100px;'>" +
+			                            "<img src='images/wenjian.png' id='zcfz' />" +
+			                            "<span>资产负债</span>"+
+			                            "<span class='tongzhi'>"+objs.size4+"</span>"+
+			                            "</div>"+
+			                        "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:100px;'>" +
+			                        "<img src='images/wenjian.png' id='sy' />" +
+			                        "<span>损益</span>"+
+			                        "<span class='tongzhi'>"+objs.size5+"</span>"+
+			                    "</div>"+
+			                    "</div>"+
+			                    "</div>");
+			    $(".right").hide();
+			    $("#mainPage").show();
+			    $("#mjjgl2").click(function(){
+			    	yxzl11111(res,phone_type,ryk2,ryk1);
+				});
+				$("#ljjc").click(function(){
+					var phone_type=3;
+					 lllll(res,phone_type);
+				});$("#zcfz").click(function(){
+					var phone_type=4;
+					 lllll(res,phone_type);
+				});$("#sy").click(function(){
+					var phone_type=5;
+					 lllll(res,phone_type);
+				});
+	  });
+		}}
+function   lllll(res,phone_type){
+	var yxzlurl="/ipad/JnpadImageBrowse/findLocalImageByType.json";
 	var obj;
-	var id;
-	var page = 0;
-	var lltpurl;
-//	$.ajax({
-//		url:wsHost+yxzlurl,
-//		type: "GET",
-//		dataType:'json',
-//		data:{
-//			customerId:res.customerId,
-//		},
-//		success: 
-	$.get(wsHost+yxzlurl,{customerId:res.customerId,productId:res.productId,applicationId:res.applicationId},callbackfunction);
+	var imas=[];
+	$.get(wsHost+yxzlurl,{customerId:res.customerId,productId:res.productId,phone_type:phone_type},callbackfunction);
 		function  callbackfunction (json){
 			obj = $.evalJSON(json);
-			id=obj.imagerList[0].id;
-			lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
-			
 		
-	$("#mainPage").html("<div class='title'><img src='images/back.png' id='backk'/>影像资料</div>"+
-			"<div class='content'>" +
-			"<div class='tabplace' id='imageBrowse' style='text-align:center;margin:0 auto;'>图片加载中..." +
-			"</div>"+
-			"<p><input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
-					"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
-					"<input type='button' class='btn btn-large btn-primary' value='查看原图' id = 'ckyt'/>"+
-					//"<input type='button' class='btn btn-large' value='返回' ondblclick='"+res.currentLoc+" /></p>"+
-	"</div>");
-	$(".right").hide();
-	$("#mainPage").show();
-	$("#imageBrowse").html(
-			"<img id ='images' width='500px' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
-	);
-	$("#backk").click(function(){
-		rysp();
-	})
-	$("#ckyt").click(function(){
-		var values=$("#ckyt").val();
-		var xx="查看原图";
-		var xxx="查看小图";
-		if(values==xx){
-			
-		$("#imageBrowse").html(
-				"<img id ='images' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
-		);
-		$("#ckyt").val("查看小图");
-		}else if(values==xxx){
-			$("#imageBrowse").html(
-					"<img id ='images' width='500px' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
-			);
-			$("#ckyt").val("查看原图");
-		}
-	})
+			for(var aa=0;aa<obj.size;aa++){
+				imas+=obj.imagerList[aa].id+",";
+			}
+			var target=imas;
+			window.plugins.imamessage.send1(success,error,target);
+		};
 	
-	$("#syy").click(function(){
-		
-		page=page-1; 
-		if(page>=0){
-			id=obj.imagerList[page].id
-			lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
-			$("#imageBrowse").html(
-					"<img id ='images' style='text-align:center' width='500px' src='"+wsHost+lltpurl+"' alt=''/>"
-			);
-		}else{
-			alert("当前已经是第一页");
-			page = page+1;
-		}
-	})
-	
-	$("#xyy").click(function(){
-		
-		page=page+1; 
-		if(page<obj.size){
-			id=obj.imagerList[page].id
-			lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
-			$("#imageBrowse").html(
-					"<img id ='images' width='500px' height='500px'  src='"+wsHost+lltpurl+"' alt=''/>"
-			);
-		}else{
-			alert("当前已经是最后一页");
-			page = page-1;
-		}
-	});
-	
-		}
-//	})
 }
-
 function csresult1(res){
+	var	managerList=window.sessionStorage.getItem("managerList");
 	var tjjlurl = "/ipad/intopieces/updateAll.json";
 	var csjlurl = "/ipad/intopieces/csInfo.json";
 	var userId = window.sessionStorage.getItem("userId");
@@ -526,7 +498,7 @@ function csresult1(res){
 		cache:false,
 		success: function (json){
 			var obj = $.evalJSON(json);
-			var	managerList=window.sessionStorage.getItem("managerList");
+			
 			window.scrollTo(0,0);//滚动条回到顶端
 			$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='myshsp()()'/>进件初审结论</div>"+  
 					"<div class='content'>" +
@@ -576,7 +548,7 @@ function csresult1(res){
 					"</select></td>"+
 					"</tr>"+
 					"<tr>"+
-					"<th>辅调客户经理:</th>"+
+					"<th>参与审批人:</th>"+
 					"<td><select id ='fduser'>"+"<option value = '0'>请选择</option>"
 					+managerList+
 					"</select></td>"+
@@ -640,9 +612,7 @@ function csresult1(res){
 				var sxed= $("#sxed").val();
 				var s = sxfw.split("-");
 
-				if((Number(sxed)>=Number(s[0])&&Number(sxed)<=Number(s[1])&&number.test(sxed)&&$("#auditresult").val()=="APPROVE")||$("#auditresult").val()!="APPROVE"){
 
-					//$("#save").attr('disabled',"true");
 					$.ajax({
 						url:wsHost+tjjlurl,
 						dateType:'json',
@@ -669,9 +639,6 @@ function csresult1(res){
 							rysp();
 						}
 					})
-				}else{
-					alert("请输入正确的授信金额");
-				}
 			})
 
 			$("#auditresult").change(function (){
@@ -1054,7 +1021,7 @@ function cysdrw(){
 				"<td>"+obj.items[i].createdTime+"</td>"+			
 				"<td>"+obj.items[i].nodeName+"</td></tr>"
 
-				if((i+1)%5==0){
+				if((i+1)%10==0){
 					result[j]=tmp;
 					j++;
 					tmp="";
@@ -1122,7 +1089,8 @@ function cysdrw(){
 					res.productId =values[0];
 					res.applicationId =values[3];
 					res.currentLoc ="cysdrw()";
-					xsyxzl(res);
+					var spType=1;
+					xsyxzl(res,spType);
 				}else{
 					alert("请选择一行");
 				}
@@ -1602,93 +1570,154 @@ function edpgxx(res){
 		}
 }
 //影像资料
-function xsyxzl(res){
-	var yxzlurl="/ipad/JnpadImageBrowse/uploadYx.json";
-	var obj;
-	var id;
-	var page = 0;
-	var lltpurl;
-//	$.ajax({
-//		url:wsHost+yxzlurl,
-//		type: "GET",
-//		dataType:'json',
-//		data:{
-//			customerId:res.customerId,
-//		},
-//		success: 
-	$.get(wsHost+yxzlurl,{customerId:res.customerId,productId:res.productId,applicationId:res.applicationId},callbackfunction);
+function xsyxzl(res,spType){
+	 var objs;
+	 var yxzlur1l="/ipad/JnpadImageBrowse/findLocalImageByType1.json";
+		$.get(wsHost+yxzlur1l,{customerId:res.customerId,productId:res.productId},callbackfunction);
 		function  callbackfunction (json){
-			obj = $.evalJSON(json);
-			id=obj.imagerList[0].id;
-			lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
-			
-		
-	$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='"+res.currentLoc+"'/>调查模板</div>"+
-			"<div class='content'>" +
-			"<div class='tabplace' id='imageBrowse' style='text-align:center;margin:0 auto;'>图片加载中..." +
-			"</div>"+
-			"<p><input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
-					"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
-					"<input type='button' class='btn btn-large btn-primary' value='查看原图' id = 'ckyt'/>"+
-					"<input type='button' class='btn btn-large' value='返回' ondblclick='"+res.currentLoc+" /></p>"+
+			objs = $.evalJSON(json);
+	window.scrollTo(0,0);//滚动条回到顶端
+	$("#mainPage").html("<div class='title' id='back'><img src='images/back.png'/>上会影像资料审核</div>"+  
+			  "<div style='padding-top:20px'>" +
+			 "<div class='bottom-content'>"+
+			 "<div class='box jjgl' id = 'diaocmb' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+             "<img src='images/wenjian.png' id='jycs' />" +
+                 "<span>经营场所</span><br/>"+
+                 "<span class='tongzhi'>"+objs.size1+"</span>"+
+             "</div>"+
+             "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+             "<img src='images/wenjian.png' id='jyqs' />" +
+             "<span>经营权属</span>"+
+             "<span class='tongzhi'>"+objs.size2+"</span>"+
+             "</div>"+
+             "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+             "<img src='images/wenjian.png' id='jydj' />" +
+             "<span>经营单据</span>"+
+             "<span class='tongzhi'>"+(objs.size3+objs.size4+objs.size5)+"</span>"+
+         "</div>"+
+         "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+         "<img src='images/wenjian.png' id='qtsr' />" +
+         "<span>其他收入</span>"+
+         "<span class='tongzhi'>"+objs.size6+"</span>"+
+     "</div>"+
+     "</div>"+
+     "<div class='bottom-content'>"+
+     "<div class='box jjgl' id = 'diaocmb' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
+     "<img src='images/wenjian.png' id='sfzm' />" +
+         "<span>身份证明</span>"+
+         "<span class='tongzhi'>"+objs.size7+"</span>"+
+     "</div>"+
+     "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+     "<img src='images/wenjian.png' id='grzc' />" +
+         "<span>个人资产</span>"+
+         "<span class='tongzhi'>"+objs.size8+"</span>"+
+     "</div>"+
+     "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+     "<img src='images/wenjian.png' id='jf' />" +
+     "<span>家访</span>"+
+     "<span class='tongzhi'>"+objs.size9+"</span>"+
+ "</div>"+
+ "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
+ "<img src='images/wenjian.png' id='db' />" +
+ "<span>担保</span>"+
+ "<span class='tongzhi'>"+objs.size10+"</span>"+
+"</div>"+
+		"</div>"+
 	"</div>");
 	$(".right").hide();
-	$("#mainPage").show();
-	$("#imageBrowse").html(
-			"<img id ='images' width='500px' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
-	);
-	
-	$("#ckyt").click(function(){
-		var values=$("#ckyt").val();
-		var xx="查看原图";
-		var xxx="查看小图";
-		if(values==xx){
-			
-		$("#imageBrowse").html(
-				"<img id ='images' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
-		);
-		$("#ckyt").val("查看小图");
-		}else if(values==xxx){
-			$("#imageBrowse").html(
-					"<img id ='images' width='500px' style='text-align:center' src='"+wsHost+lltpurl+"' alt='' />"
-			);
-			$("#ckyt").val("查看原图");
-		}
-	})
-	
-	$("#syy").click(function(){
+	$("#mainPage").show(); 
+	 $("#back").click(function(){
+		 if(spType==1){
+			 cysdrw(); 
+		 }else if((spType==2)){
+			 sdjy();  
+		 }
+	 });
+	  $("#jycs").click(function(){
+		  var phone_type=1;
+		  xszp1(res,phone_type)
+	  });
+	  $("#jyqs").click(function(){
+		  var phone_type=2;
+		  xszp1(res,phone_type)
+	  });
+	  $("#qtsr").click(function(){
+		  var phone_type=6;
+		  xszp1(res,phone_type)
+	  });
+	  $("#sfzm").click(function(){
+		  var phone_type=7;
+		  xszp1(res,phone_type)
+	  });
+	  $("#grzc").click(function(){
+		  var phone_type=8;
+		  xszp1(res,phone_type)
+	  });
+	  $("#jf").click(function(){
+		  var phone_type=9;
+		  xszp1(res,phone_type)
+	  });
+	  $("#db").click(function(){
+		  var phone_type=10;
+		  xszp1(res,phone_type)
+	  });
+	  $("#jydj").click(function(){
+		  window.scrollTo(0,0);//滚动条回到顶端
+			$("#mainPage").html("<div class='title'  id='back'><img src='images/back.png'/>经营权属</div>"+  
+					"<div style='padding-top:100px'>" +
+					 "<div class='bottom-content'>"+
+			                            "<div class='box jjgl' id = 'diaocmb' style='margin-left:200px;margin-right:100px;display:inline-block;'>" +
+			                            "<img src='images/wenjian.png' id='ljjc' />" +
+			                                "<span>逻辑检查</span><br/>"+
+			                                "<span class='tongzhi'>"+objs.size3+"</span>"+
+			                            "</div>"+
+			                            "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:100px;'>" +
+			                            "<img src='images/wenjian.png' id='zcfz' />" +
+			                            "<span>资产负债</span>"+
+			                            "<span class='tongzhi'>"+objs.size4+"</span>"+
+			                            "</div>"+
+			                        "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:100px;'>" +
+			                        "<img src='images/wenjian.png' id='sy' />" +
+			                        "<span>损益</span>"+
+			                        "<span class='tongzhi'>"+objs.size5+"</span>"+
+			                    "</div>"+
+			                    "</div>"+
+							"</div>");
+			    $(".right").hide();
+			    $("#mainPage").show();
+			    $("#back").click(function(){
+			    	xsyxzl(res,spType);
+				});
+				$("#ljjc").click(function(){
+					var phone_type=3;
+					xszp1(res,phone_type)
+				});$("#zcfz").click(function(){
+					var phone_type=4;
+					xszp1(res,phone_type)
+				});$("#sy").click(function(){
+					var phone_type=5;
+					xszp1(res,phone_type)
+				});
+	  });
+		}}
+
+function xszp1(res,phone_type){
+	var yxzlurl="/ipad/JnpadImageBrowse/findLocalImageByType.json";
+	var obj;
+	var imas=[];
+	$.get(wsHost+yxzlurl,{customerId:res.customerId,productId:res.productId,phone_type:phone_type},callbackfunction);
+		function  callbackfunction (json){
+			obj = $.evalJSON(json);
 		
-		page=page-1; 
-		if(page>=0){
-			id=obj.imagerList[page].id
-			lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
-			$("#imageBrowse").html(
-					"<img id ='images' style='text-align:center' width='500px' src='"+wsHost+lltpurl+"' alt=''/>"
-			);
-		}else{
-			alert("当前已经是第一页");
-			page = page+1;
-		}
-	})
-	
-	$("#xyy").click(function(){
+			for(var aa=0;aa<obj.size;aa++){
+				imas+=obj.imagerList[aa].id+",";
+			}
+			var target=imas;
+			window.plugins.imamessage.send1(success,error,target);
+		};
 		
-		page=page+1; 
-		if(page<obj.size){
-			id=obj.imagerList[page].id
-			lltpurl="/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+id;
-			$("#imageBrowse").html(
-					"<img id ='images' width='500px' height='500px'  src='"+wsHost+lltpurl+"' alt=''/>"
-			);
-		}else{
-			alert("当前已经是最后一页");
-			page = page-1;
-		}
-	});
 	
 		}
-//	})
-}
 //显示调查模板
 function xszlxx(res){
 	var dcmburl="/ipad/product/browerModel.json";
@@ -1705,16 +1734,13 @@ function xszlxx(res){
 					"<div class='content'>" +
 					"<div class='tabplace'>"+
 					"<ul class='com-tab' >"+
-					"<li class='tab' id ='jyb'>建议</li>"+
-					"<li class='tab' id ='jbzkb'>基本状况</li>"+
-					"<li class='tab' id = 'zcfzb'>资产负债</li>"+
-					"<li class='tab' id = 'bzlrb'>标准利润</li>"+
-					"<li class='tab' id = 'xjlb'>现金流</li>"+
-					"<li class='tab' id = 'jcb'>交叉</li>"+
+					"<li class='tab' id ='jyb'>调查表</li>"+
+					"<li class='tab' id ='jbzkb'>月份损溢表</li>"+
+					"<li class='tab' id = 'ysyfb'>应收预付</li>"+
+					"<li class='tab' id = 'dhd'>点货单</li>"+
 					"<li class='tab' id = 'gzb'>固资</li>"+
 					"<li class='tab' id = 'yfysb'>应付预收</li>"+
-					"<li class='tab' id = 'ysyfb'>应收预付</li>"+
-					"<li class='tab' id = 'jueyb'>决议表</li>"+
+					"<li class='tab' id = 'xjlb'>现金流</li>"+
 					"</ul></div>"+
 					"<div id = 'resultshow'>"+
 					obj.tableContentjyb+
@@ -1728,29 +1754,16 @@ function xszlxx(res){
 				$("#resultshow").html(obj.tableContentjyb);
 			})
 
-			//基本状况
+			//月份损溢表
 			$("#jbzkb").click(function(){
 				$("#resultshow").html(obj.tableContentjbzkb);
 			})
 
-			//资产负债
-			$("#zcfzb").click(function(){
-				$("#resultshow").html(obj.tableContentzcfzb);
-			})
 
-			//标准利润
-			$("#bzlrb").click(function(){
-				$("#resultshow").html(obj.tableContentbzlrb);
-			})
 
 			//现金流
 			$("#xjlb").click(function(){
 				$("#resultshow").html(obj.tableContentxjlb);
-			})
-
-			//交叉
-			$("#jcb").click(function(){
-				$("#resultshow").html(obj.tableContentxjXb);
 			})
 
 			//固资
@@ -1768,9 +1781,9 @@ function xszlxx(res){
 				$("#resultshow").html(obj.tableContentysyfb);
 			})
 
-			//决议表
-			$("#jueyb").click(function(){
-				$("#resultshow").html(obj.tableContentjueyb);
+			
+			$("#dhd").click(function(){
+				$("#resultshow").html(obj.tableContentdhd);
 			})
 		},
 		error:function(json){
@@ -1781,6 +1794,7 @@ function xszlxx(res){
 }
 //初审结论
 function csresult(res){
+	var	managerList=window.sessionStorage.getItem("managerList");
 	var tjjlurl = "/ipad/intopieces/updateAll.json";
 	var csjlurl = "/ipad/intopieces/csInfo.json";
 	var userId = window.sessionStorage.getItem("userId");
@@ -1794,7 +1808,7 @@ function csresult(res){
 		cache:false,
 		success: function (json){
 			var obj = $.evalJSON(json);
-			var	managerList=window.sessionStorage.getItem("managerList");
+			
 			window.scrollTo(0,0);//滚动条回到顶端
 			$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='myshsp()()'/>进件初审结论</div>"+  
 					"<div class='content'>" +
@@ -1835,18 +1849,18 @@ function csresult(res){
 					"</tr>"+
 					"<tr>"+
 					"<th>参与审批人：</th>"+
-					"<td><select id ='cyuser1'>"+"<option value = '0'>请选择</option>"
-					+managerList+
+					"<td><select id ='cyuser1'>"+
+					managerList+
 					"</select></td>"+
 					"<th>参与审批人：</th>"+
-					"<td><select id ='cyuser2'>"+"<option value = '0'>请选择</option>"
-					+managerList+
+					"<td><select id ='cyuser2'>"+
+					managerList+
 					"</select></td>"+
 					"</tr>"+
 					"<tr>"+
 					"<th>辅调客户经理:</th>"+
-					"<td><select id ='fduser'>"+"<option value = '0'>请选择</option>"
-					+managerList+
+					"<td><select id ='fduser'>"+
+					managerList+
 					"</select></td>"+
 					"<th>期限：</th>"+
 					"<td><select>" +
@@ -1993,7 +2007,7 @@ function managerList(){
 		async:false,
 		success:function (json){
 			var obj = $.evalJSON(json);
-			opin=obj.manager;
+			opin=obj;
 		}
 	})
 	return opin;
@@ -2160,7 +2174,8 @@ function sdjy(){
 					res.productId =values[0];
 					res.applicationId =values[3];
 					res.currentLoc ="sdjy()";
-					xsyxzl(res);
+					var spType=2;
+					xsyxzl(res,spType);
 				}else{
 					alert("请选择一行");
 				}
@@ -2631,7 +2646,9 @@ function edpgxx22(res){
 
 //显示审贷决议
 function xssdjy(res){
-
+	var	managerList=window.sessionStorage.getItem("managerList");
+	/*var	managerList1=window.sessionStorage.getItem("managerList1");
+	var	managerList2=window.sessionStorage.getItem("managerList2");*/
 	var sdjyurl = "/ipad/intopieces/sdjy.json";
 	var tjjlurl = "/ipad/intopieces/updateAll.json";
 	var userId = window.sessionStorage.getItem("userId");
@@ -2723,18 +2740,18 @@ function xssdjy(res){
 					"</tr>"+
 					"<tr>"+
 					"<th>参与审批人：</th>"+
-					"<td><select id ='cyuser1'>"+"<option value = '0'>请选择</option>"
-					+opin+
+					"<td><select id ='cyuser1'>"+managerList
+					+
 					"</select></td>"+
 					"<th>参与审批人：</th>"+
-					"<td><select id ='cyuser2'>"+"<option value = '0'>请选择</option>"
-					+opin+
+					"<td><select id ='cyuser2'>"+managerList
+					+
 					"</select></td>"+
 					"</tr>"+
 					"<tr>"+
 					"<th>辅调客户经理:</th>"+
-					"<td><select id ='fduser'>"+"<option value = '0'>请选择</option>"
-					+opin+
+					"<td><select id ='fduser'>"+managerList
+					+
 					"</select></td>"+
 					"<th>期限：</th>"+
 					"<td><select id ='decisionTerm'>" +
@@ -4815,7 +4832,7 @@ function lsbywfzr(res){
 						success:function(json){
 							var mes = $.evalJSON(json);
 							alert(mes.message);
-							lsywbfzrsp();
+							/*lsywbfzrsp();*/
 						}
 
 

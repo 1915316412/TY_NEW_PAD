@@ -448,10 +448,10 @@ function addTd(table){
     if(table=="qtyxzl"){//其他影像资料
         var num= $('#qtyxzl tr').length;
         $("#"+table).append("<tr>"+    
-                                "<td>"+num+"</td>"+
-                                "<td><input type='text' id='qtyxzl_sheet"+num+"' name='imageuri' uri='' class='readonly' readonly='readonly'/><input type='button' class='btn' value='选择文件' onclick='getMedia(\"qtyxzl_sheet"+num+"\",\"img\",\"imageuri\","+num+");'/></td>"+
-                                //"<td><img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet"+num+"\",\"img\");'/></td>"+
-                            "</tr>");      
+        		 "<td>"+num+"</td>"+
+                 "<td><input type='text' id='qtyxzl_sheet"+num+"' name='imageuri' uri='' class='readonly' readonly='readonly'/><input type='button' class='btn' value='选择文件' onclick='getMedia(\"qtyxzl_sheet"+num+"\",\"img\",\"imageuri\","+num+");'/></td>"+
+                 "<td><img src='images/ugc_icon_type_photo.png' onclick='capture(\"qtyxzl_sheet"+num+"\",\"img\",\"imageuri\","+num+");'/></td>"+
+             "</tr>");      
     }
   if(table=="gzjh"){//工作计划
       var num= $('#gzjh tr').length;

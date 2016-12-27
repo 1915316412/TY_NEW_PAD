@@ -2,7 +2,9 @@ package com.cardpay.banksaler_rocket;
 import org.json.JSONObject;
 
 import com.phonegap.DroidGap;
+import com.phonegap.api.LOG;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -13,11 +15,19 @@ public class MyPhoneGapActivity extends DroidGap {
 	public void onCreate(Bundle savedInstanceState) {
 		//加载程序
 		super.onCreate(savedInstanceState);
+		AppManager.getInstance().addActivity(this);
+		super.setIntegerProperty("loadUrlTimeoutValue", 50000);
 		super.loadUrl("file:///android_asset/www/index.html");
-		 super.setIntegerProperty("loadUrlTimeoutValue",10000);
+		 Bundle b = new Bundle();
+		 b.putString("name", "1");
+		 Intent i=new Intent();
+		 i.putExtras(b);
+		 i.setClass(getApplicationContext(), SendActivity.class);
+		 startActivity(i);
 		
 		//启动后台upload服务
 		intent = new Intent(getApplicationContext(),UploadService.class);
 		startService(intent);
 	}
+	
 }

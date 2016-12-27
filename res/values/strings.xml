@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">蜂巢w贷</string>
+    <string name="app_name">蜂巢WE贷</string>
+    <string name="title_activity_study">StudyActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_send">SendActivity</string>
+    <string name="title_activity_send1">MainActivity</string>
+    <string name="title_activity_get_phone">GetPhoneActivity</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main1">Main1Activity</string>
 
 </resources>

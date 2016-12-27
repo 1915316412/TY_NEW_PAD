@@ -61,5 +61,11 @@
     <plugin
         name="ViewExeclPlugin"
         value="com.cardpay.banksaler_rocket.ViewExeclPlugin" />
-
+	
+    <plugin
+        name="StudyMessage"
+        value="com.cardpay.banksaler_rocket.StudyMessage" />
+     <plugin
+        name="ImaList"
+        value="com.cardpay.banksaler_rocket.ImaList" />
 </plugins>

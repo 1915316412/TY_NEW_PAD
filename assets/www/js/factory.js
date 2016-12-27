@@ -1,12 +1,8 @@
-/**
+﻿/**
  * 工厂模式
  */
-var crud = crud || {};
-crud.dom = crud.dom || {};
-var wsHost = "http://192.168.191.1:8080/PCCredit";
-//var wsHost = "http://61.98.68.89:8080/PCCredit";
-//var wsHost = "http://61.98.0.32:9080/pccredit_jn";
-//带auth的GET
+var crud = crud || {};crud.dom = crud.dom || {};
+var wsHost = "http://192.168.191.2:8080/PCCredit";
 crud.dom.GETAuth = function() {
     this.doGetAuth = function(url,auth,callback,errorMsg) {
         $.ajax({
