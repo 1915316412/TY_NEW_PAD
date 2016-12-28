@@ -16,8 +16,8 @@ public class MyPhoneGapActivity extends DroidGap {
 		//加载程序
 		super.onCreate(savedInstanceState);
 		AppManager.getInstance().addActivity(this);
-		super.setIntegerProperty("loadUrlTimeoutValue", 50000);
 		super.loadUrl("file:///android_asset/www/index.html");
+		super.setIntegerProperty("loadUrlTimeoutValue", 20000);
 		 Bundle b = new Bundle();
 		 b.putString("name", "1");
 		 Intent i=new Intent();

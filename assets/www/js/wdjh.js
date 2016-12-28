@@ -1640,13 +1640,12 @@ function khcsjh(){
 		type: "GET",
 		dataType:'json',
 		success: function (json) {
-			alert(json);
 			obj = $.evalJSON(json);
 			for(var i = 0;i<obj.size;i++){
 				tmp=tmp+"<tr onclick='check(this)'>"+
-				"<td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.result[i].TypeCode+"@"+
+				"<td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.result[i].typeCode+"@"+
 				obj.result[i].typeName+"@"+obj.result[i].cardId+
-				"@"+obj.result[i].tel+"'"+"/>"+"</span></td>"+
+				"@"+obj.result[i].tel+"@"+obj.result[i].bankCode+"'"+"/>"+"</span></td>"+
 				"<td>"+obj.result[i].typeName+"</td>"+
 				"<td>"+obj.result[i].cardId+"</td>"+
 				"<td>"+obj.result[i].tel+"</td>"+
@@ -1695,13 +1694,27 @@ function khcsjh(){
 			})
 			$("#tjwhjh").click(function() {
 				if ($("input[type='radio']").is(':checked')) {
+					var url="/ipad/product/selectOrCs.json";
 					var objs={};
 					var values =$('input[name="checkbox"]:checked').attr("value").split("@");
 					objs.TypeName = values[1];
 					objs.cardId = values[2];
 					objs.tel = values[3];
 					objs.appId = values[0];
-					tjcsjh(objs);
+					objs.time=values[4];
+					$.ajax({
+						url:wsHost + url,
+						type: "GET",
+						dataType:'json',
+						data:{id:objs.appId,time:objs.time},
+						success: function (json) {
+							obj = $.evalJSON(json);
+							if(obj.size>0){
+								alert('您选择的客户已经添加了催收计划!!');
+							}else{
+								tjcsjh(objs);
+							}
+						}})
 				}else{
 					alert("请选择一行");
 				}
@@ -1761,16 +1774,21 @@ function tjcsjh(objs){
 		if(way=="03"){
 			way="上门"
 		}
-		var khwhurl="/ipad/product/insert.json"
+		var khwhurl="/ipad/product/InsertCs.json"
 		$.ajax({
 			url:wsHost + khwhurl,
 			type: "GET",
 			dataType:'json',
-			data:{customerId:objs.appId,productId:objs.productId,way:way,csmb:csmb,csts:csts,userId:userId},
+			data:{time:objs.time,customerId:objs.appId,way:way,csmb:csmb,csts:csts,userId:userId},
 			success: function (json) {
 				obj = $.evalJSON(json);
-				alert(obj.message);
-				khcsjh();
+				if(obj.size>0){
+					alert('添加成功');
+					khcsjh();
+				}else{
+					alert('添加失败');
+					khcsjh();
+				}
 			}})
 	})
 }

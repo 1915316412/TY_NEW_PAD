@@ -2,7 +2,7 @@
  * 工厂模式
  */
 var crud = crud || {};crud.dom = crud.dom || {};
-var wsHost = "http://192.168.191.2:8080/PCCredit";
+var wsHost = "http://192.168.191.4:8080/PCCredit";
 crud.dom.GETAuth = function() {
     this.doGetAuth = function(url,auth,callback,errorMsg) {
         $.ajax({

@@ -611,6 +611,7 @@ function gxkhwhjh(objs){
 		}
 	})
 }   
+var csjh;
 //客户维护-客户催收日志
 function khcsrz(){
 	var userId = window.sessionStorage.getItem("userId");
@@ -619,22 +620,15 @@ function khcsrz(){
 	var result={};
 	var page=1;
 	var j = 1;
+	var obj;
 	$.ajax({
 		url:wsHost + wsLoginUrl,
 		type: "GET",
 		dataType:'json',
 		success: function (json){
 			obj = $.evalJSON(json);
-
+			csjh=obj;
 			for(var i = 0;i<obj.totalCount;i++){
-				if(obj.items[i].collectionMethod=="01"){
-					obj.items[i].collectionMethod="电话";
-				}else if(obj.items[i].collectionMethod=="02"){
-					obj.items[i].collectionMethod="短信";
-				}else if(obj.items[i].collectionMethod=="03"){
-					obj.items[i].collectionMethod="上门";
-				}
-
 				if(obj.items[i].endResult=="collection"){
 					obj.items[i].endResult="催收中";
 				}else if(obj.items[i].endResult=="repaymentcommitments"){
@@ -651,15 +645,17 @@ function khcsrz(){
 					obj.items[i].endResult="催收完成";
 				}
 				tmp=tmp+"<td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.items[i].id+"@"+obj.items[i].chineseName+"@"+
-				obj.items[i].productName+"@"+obj.items[i].collectionMethod+"@"+obj.items[i].implementationObjective+"@"+obj.items[i].collectionTime+"@"+obj.items[i].endResult+
-				"@"+obj.items[i].size+"'/>"+"</span></td>"+
+				obj.items[i].collectionMethod+"@"+obj.items[i].implementationObjective+"@"+obj.items[i].collectionTime+"@"+obj.items[i].endResult+
+				"@"+obj.items[i].collectionEndtime+"@"+obj.items[i].created_time+"'/>"+"</span></td>"+
 				"<td>"+obj.items[i].chineseName+"</td>"+
-				"<td>"+obj.items[i].productName+"</td>"+
 				"<td>"+obj.items[i].collectionMethod+"</td>"+
 				"<td>"+obj.items[i].implementationObjective+"</td>"+
 				"<td>"+obj.items[i].collectionTime+"</td>"+
+				"<td>"+obj.items[i].created_time+"</td>"+
+				"<td>"+obj.items[i].collectionEndtime+"</td>"+
 				"<td>"+obj.items[i].endResult+"</td>"+
-				"<td>"+obj.items[i].size+"</td>"
+				"<td>"+obj.items[i].hkje+"</td>"+
+				"<td>"+obj.items[i].crhksj+"</td>";
 				if((i+1)%5==0){
 					result[j]=tmp;
 					j++;
@@ -673,44 +669,28 @@ function khcsrz(){
 					"<div class='content'>"+
 					"<table class='cpTable' style='text-align:center;'>"+
 					"<tr>"+  
-					"<th>序号</th>"+  
+					"<th></th>"+
 					"<th>客户姓名</th>"+
-					"<th>产品名称</th>"+
 					"<th>催收方式</th>"+
 					"<th>催收目标</th>"+
 					"<th>催收天数</th>"+
+					"<th>催收开始时间</th>"+
+					"<th>催收结束时间</th>"+
 					"<th>催收结果</th>"+
-					"<th>实施记录数目</th>"+
-//					"<th>序号</th>"+  
-//					"<th>客户姓名</th>"+
-//					"<th>客户身份标识</th>"+
-//					"<th>催收方式</th>"+
-//					"<th>催收时间</th>"+
-//					"<th>实施效果</th>"+
-//					"<th>承诺还款金额</th>"+
-//					"<th>承诺还款时间</th>"+
-//					"<th>是否变更催收计划</th>"+
+					"<th>承诺还款金额</th>"+
+					"<th>承诺还款时间</th>"+
+				  "<th>是否变更催收计划</th>"+
 					"</tr>"+
 					"<tr id = 'cslb' onclick='check(this)'>"+   
 					result[page]+
-//					"<td></td>"+
-//					"<td>郝俊芝</td>"+
-//					"<td></td>"+
-//					"<td>电话</td>"+
-//					"<td>2015-12-12</td>"+
-//					"<td></td>"+
-//					"<td>3000</td>"+
-//					"<td>2015-12-12</td>"+
-//					"<td><input type='button' onclick='bgcsjh()' class='btn btn-warning' value='是'/></td>"+
+					"<td><input type='button' id='csxs' class='btn btn-warning' value='是'/></td>"+
 					"</tr>"+
 					"</table>"+
-//					"<textarea placeholder='客户催收实施描述' style='height:15em;'></textarea>"+
 					"<p>"+
-					"<input type='button' class='btn btn-large btn-primary' value='显示' id = 'csxs'/>"+
+				/*	"<input type='button' class='btn btn-large btn-primary' value='显示' id = 'csxs'/>"+*/
 					"<input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
 					"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
 					"<input type='button' class='btn btn-large btn-primary' value='返回' onclick = 'editUser()' id = 'fh'/>"+
-//					"<input type='button' class='btn btn-large btn-primary' value='保存并继续' onclick='editUser()'/>" +
 					"</p>"+
 			"</div>");
 			$(".right").hide();
@@ -736,8 +716,14 @@ function khcsrz(){
 			$("#csxs").click(function(){
 			if ($("input[type='radio']").is(':checked')) {
 				var values =$('input[name="checkbox"]:checked').attr("value").split("@");
-				var id = values[0];
-				xscsjh(id);
+				csjh.id = values[0];
+				csjh.name=values[1];
+				csjh.jssj = values[6];
+				csjh.way = values[2];
+				csjh.mb=values[3];
+				csjh.ts = values[4];
+				csjh.kssj=values[7];
+				bgcsjh(csjh);
 			}else{
 				alert("请选择一行");
 			}
@@ -746,55 +732,68 @@ function khcsrz(){
 	})
 } 
 
-function xscsjh(id){
-	
-	var csjhxx = "/ipad/product/browerRiskcustomer.json";
-	$.ajax({
-		url:wsHost + csjhxx,
-		type: "GET",
-		dataType:'json',
-		data:{
-			collectionPlanId:id,
-			},
-		success: function (json){
-		}
-	
-	})
-	
-}
 //变更催收计划
-function bgcsjh(){
+function bgcsjh(csjh){
+	 var tmp=
+	"<td>"+csjh.name+"</td>"+
+	"<td>"+csjh.way+"</td>"+
+	"<td>"+csjh.mb+"</td>"+
+	"<td>"+csjh.ts+"</td>"+
+	"<td>"+csjh.kssj+"</td>"+
+	"<td>"+csjh.jssj+"</td>";
 	window.scrollTo(0,0);//滚动条回到顶端
-	$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='editUser()'/>杨景琳&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 01010419</div>"+ 
+	$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='editUser()'/>催收客户:"+csjh.name+"</div>"+ 
 			"<div class='content'>"+
 			"<table class='cpTable' style='text-align:center;'>"+
-			"<tr>"+                             
-			"<th>序号</th>"+  
+			"<tr>"+  
 			"<th>客户姓名</th>"+
-			"<th>客户身份标识</th>"+
-			"<th>产品标识</th>"+
-			"<th>贷款金额</th>"+
-			"<th>逾期金额</th>"+
-			"<th>逾期期数</th>"+
 			"<th>催收方式</th>"+
 			"<th>催收目标</th>"+
-			"<th>催收时间</th>"+
+			"<th>催收天数</th>"+
+			"<th>催收开始时间</th>"+
+			"<th>催收结束时间</th>"+
+			"<th>催收结果</th>"+
+			"<th>承诺还款金额</th>"+
+			"<th>承诺还款时间</th>"+
 			"</tr>"+
 			"<tr>"+    
-			"<td>1</td>"+
-			"<td>郝俊芝</td>"+
-			"<td></td>"+
-			"<td></td>"+
-			"<td>100000</td>"+
-			"<td>3000</td>"+
-			"<td>1</td>"+
-			"<td><input type='text' class='addinput'/></td>"+
-			"<td><input type='text' class='addinput'/></td>"+
-			"<td><input type='date' class='addinput'/></td>"+
+			tmp+
+			"<td><select id='cszt'>" +
+			"<option value = 'collection'>正在催收</option>" +
+			"<option value = 'repaymentcommitments'>承诺还款</option>" +
+			"<option value = 'losecontact'>失联</option>" +
+			"<option value = 'reject'>拒绝</option>" +
+			"<option value = 'hang'>挂起</option>" +
+			"<option value = 'continuecollection'>继续催收</option>" +
+			"<option value = 'complete'>催收完成</option>" +
+			"</select>"+
+			"</td>"+
+			"<td><input id='money' type='text' class='addinput'/></td>"+
+			"<td><input id='hksj' type='date' class='addinput'/></td>"+
 			"</tr>"+
 			"</table>"+
-			"<p><input type='button' class='btn btn-large btn-primary' value='保存并继续' onclick='editUser()'/></p>"+
+			"<p><input type='button' class='btn btn-large btn-primary' value='保存并继续' id='save'/></p>"+
 	"</div>");
 	$(".right").hide();
 	$("#mainPage").show();
+	$("#save").click(function(){
+		var cszt=$("#cszt").val();
+		var money=$("#money").val();
+		var hksj=$("#hksj").val();
+		var url='/ipad/product/updateCs.json';
+		$.ajax({
+			url:wsHost + url,
+			type: "GET",
+			dataType:'json',
+			data:{id:csjh.id,cszt:cszt,money:money,hksj:hksj},
+			success: function (json){
+				obj = $.evalJSON(json);
+				if(obj.size>0){
+					alert('保存成功');
+					khcsrz();
+				}else{
+					alert('保存失败');
+				}
+			}})
+	})
 }   

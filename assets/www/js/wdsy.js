@@ -926,8 +926,8 @@ function tz(){
 				"<table class='cpTable' style='width:100%;height:85%;position:fixed;top:100px;bottom:0;text-align:center;'>"+
 				"<tr>"+                             
 				"<td style='width:33.3%;' onclick='ckqtjj()'>" +
-				"<img src='images/sdh.png'/><br/><span class='tongzhi'>"+objs.pcount+"</span><br/>" +
-				"<span class='tz_message'>审贷会通知</span>" +
+				"<img src='images/sdh.png'/><br/>" +
+				"<span class='tz_message'>区域(小组)进件查看</span>" +
 				"</td>"+     
 				"<td onclick='fxsxtz()'>" +
 				"<img src='images/fxsx.png'/><br/><span class='tongzhi'>"+objs.risk+"</span><br/>" +
