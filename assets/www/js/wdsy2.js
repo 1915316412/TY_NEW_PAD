@@ -1,4 +1,4 @@
-
+/*
 //我的首页
 function mywdsy(){
 	window.scrollTo(0,0);//滚动条回到顶端
@@ -36,7 +36,7 @@ function mywdsy(){
 		"<p>所属银行："+objs.result.org+"</p>"+
 		"<p>客户经理编号："+objs.result.externalId+"</p>"+
 		"<p>职位：客户经理</p>"+
-		/*"<p>授信权限：50万</p>"+*/
+		"<p>授信权限：50万</p>"+
 //		"<p>放款总额：100万</p>"+
 		"</div>"+
 		//"<div class='box wdsy5' ><a href='gdmap.html'>定位</a></div>"+ 
@@ -53,7 +53,7 @@ function mywdsy(){
 		$("#nimei").html("上次登录时间：<br/>"+window.sessionStorage.getItem("time"));
 	}
 
-	/*$("#mainPage").html("<div class='title'>我的首页</div>"+  
+	$("#mainPage").html("<div class='title'>我的首页</div>"+  
                         "<div class='content'>" +
                             "<div class='user-info'>" +
                                 "<img src='images/sq.jpg'/>"+
@@ -72,7 +72,7 @@ function mywdsy(){
                             "<div class='box wdsy3' onclick='khyyzk()'><img src='images/khyyzk.png'/><span>客户运营状况</span></div>"+
                             "<div class='box wdsy4' onclick='tz()'><img src='images/tz.png'/><span>通知</span></div>"+
                             "<div class='box wdsy5' onclick='edpggj()'><img src='images/jljlxx.png'/><span>额度评估工具</span></div>"+                           
-                        "</div>");*/
+                        "</div>");
 	$(".right").hide();
 	$("#mainPage").show();
 }
@@ -87,8 +87,8 @@ function khjjxx(){
 			"<div id='ex_1' class='zingchart'></div>"+ 
 			"<div class='ban'></div>"+
 			"<p>" +
-			/*	"<input type='button' class='tab-button' style='margin-left:40px;' value='补充进件' onclick='bcjj()'/>" +
-								"<input type='button' class='tab-button' value='拒绝进件' onclick='jjjj()'/>" +*/
+				"<input type='button' class='tab-button' style='margin-left:40px;' value='补充进件' onclick='bcjj()'/>" +
+								"<input type='button' class='tab-button' value='拒绝进件' onclick='jjjj()'/>" +
 			"<input type='button' class='tab-button' value='查看详情' onclick='jjxxlb()'/>" +
 			"</p>" +
 	"</div>");
@@ -541,7 +541,7 @@ function khyyzk(){
 	$("#mainPage").show();
 }
 
-/*function ckqttjt(){
+function ckqttjt(){
 	$("#mainPage").html("");
 	var url = "/ipad/tongji.json";
 	var get = crud.dom.factory("GET");
@@ -735,7 +735,7 @@ function khyyzk(){
 
 														})
 	}
-}*/
+}
 //我的足迹
 function wdzj(){
 	$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='mywdsy()'/>杨景琳&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 01010419</div>"+  
@@ -1132,7 +1132,7 @@ function fpjjtz(){
 			"</tr>"+                            
 			"</table>"+
 			"</div>"+   
-			/*"<table class='cpTable' style='text-align:center;'>"+
+			"<table class='cpTable' style='text-align:center;'>"+
                             "<tr>"+                             
                                 "<th>序号</th>"+  
                                 "<th>客户姓名</th>"+
@@ -1149,7 +1149,7 @@ function fpjjtz(){
                                 "<td></td>"+
                                 "<td></td>"+
                             "</tr>"+
-                        "</table>"+*/
+                        "</table>"+
 	"</div>");
 	$(".right").hide();
 	$("#mainPage").show();
@@ -1713,7 +1713,7 @@ $("#sure").click(function(){
 	var chinesename=$("#chinesename").val();
 	var cardid=$("#cardid").val();
 	var khdysr=$("#khdysr").val();
-     /*zfqk=zfqk;
+     zfqk=zfqk;
 	 zcqk=zcqk;
 	 yyqk=yyqk;
 	 dwxz=dwxz;
@@ -1731,7 +1731,7 @@ $("#sure").click(function(){
 	grsr=grsr;
 	zwsrb=zwsrb;
 	syrk=syrk;
-	tjr=tjr;*/
+	tjr=tjr;
 	
 	var cykh=$("#cykh").val();
 	 zf=zf;
@@ -1808,7 +1808,7 @@ var zf;
 var jyed;
 var pfdj;
 var khjlzgyx;
-/*function yzCardId(obj){
+function yzCardId(obj){
 	var cardid=$(obj).val();
 	var edpgUrl="/ipad/selectCardId.json";
 	$.ajax({
@@ -1822,7 +1822,7 @@ var khjlzgyx;
 			alert(obj.message);
         	document.getElementById("cardid").value = ""
 		}})
-}*/
+}
 function kh(khjlzgyx1){
 	khjlzgyx=khjlzgyx1;
 }
@@ -2102,9 +2102,9 @@ function wzxx(){
  	if(lon!="" && lat!=""){
  		xval.remove(); 
  	}
- 	/**
+ 	*//**
  	 * 查看其他客户的地理位置
- 	 */
+ 	 *//*
 	$("#ckkhjlwz").click(function(){
 		var gxwzUrl1 = "/ipad/selectUserByUserid.json";
 		var userid=$("#userid").val();
@@ -2137,9 +2137,9 @@ function wzxx(){
 			alert('请选择客户经理!!');
 		}
 	})
-	/**
+	*//**
 	 * 发送当前客户经理的地理位置
-	 */
+	 *//*
 	$("#fswdwz").click(function(){
  		var gxwzUrl = "/ipad/addusercoorinate.json";
  		var userId = window.sessionStorage.getItem("userId");
@@ -2184,9 +2184,9 @@ function startGetLocation(){
 function supportsGeoLocation(){ 
 	return !!navigator.geolocation; 
 }   
-/**
+*//**
  * 自动发送坐标
- */
+ *//*
 function getLocations(){ 
 	navigator.geolocation.getCurrentPosition(mapIts,locationError); 
 } 
@@ -2305,3 +2305,4 @@ function showInformation(marker,updatetime,point,map){
 	 		});
 	 })
 }
+*/

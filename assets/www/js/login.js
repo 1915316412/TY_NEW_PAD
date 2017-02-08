@@ -58,16 +58,19 @@ function checkLoginCallback(json){
     var manggerListt = managerList();
     var manggerList=manggerListt.manager;
    
-    if(obj.noTime=="无"){
+    if(obj.Time==null){
     	 session.setItem("time","对不起，您今天还没有登陆!!");
-    }else if(obj.noTime=="有"){
-    	 session.setItem("time",obj.time);
+    }else {
+    	 session.setItem("time",obj.Time);
     }
 
     //alert(obj.result.user.id);
     session.setItem("userId",obj.result.user.id);
+    session.setItem("hktxStr",obj.repay);
     session.setItem("userType",obj.result.user.userType);
     session.setItem("managerList",manggerList);
+    session.setItem("qxckUser",json);
+    session.setItem("zw",obj.zw);
     //定时定位
    // var location = window.setInterval(getLocations,1000*60*5);
 
@@ -105,6 +108,29 @@ function dc(){
     $(".left").hide();
 }
 
-
+function hktx(){//显示登出提示
+	var Str=window.sessionStorage.getItem("hktxStr");
+	var hk;
+	if(Str=="" || window.sessionStorage.getItem("userType")==2){
+		hk="暂无";
+	}else{
+		hk=Str;
+	}
+    $("#text1").html("<div class='display-div' id='xdyss'>"+
+                        "<div class='dialog-head'>"+
+                           "<h4>还款提醒</h4>"+
+                        "</div>"+
+                        "<div class='dialog-content'>"+
+                        hk+
+                        "</div>"+
+                        "<div class='dialog-bottom'>"+
+                           "<button type='button' class='btn btn-danger' id='hktx'>确定</button>"+
+                        "</div>"+
+                    "</div><!-- /display-div -->");
+    $("#text1").animate({top:"0px"},"500");
+    $("#hktx").click(function(){
+    	  $("#text1").hide();
+    })
+}
 
 

@@ -55,6 +55,7 @@ function qyck(obj){
 		tz();
 	})
 	$("#see").click(function(){
+		 $("#see").attr('disabled',true);
 		if ($("input[type='radio']").is(':checked')) {
 			var values =$('input[name="checkbox"]:checked').attr("value").split("@");
 			var id=values[1];
@@ -118,6 +119,7 @@ function xzcy(obj,type){
 		}
 	})
 	$("#see").click(function(){
+		 $("#see").attr('disabled',true);
 		if ($("input[type='radio']").is(':checked')) {
 			var values =$('input[name="checkbox"]:checked').attr("value").split("@");
 			 displayName=values[0];
@@ -159,6 +161,9 @@ function jjtju1(){
 			           },
 			           {   
 			        	   "backgroundColor":"#fe7215","text": "待审批进件数量  "+objs.NospCount,"values": [objs.NospCount]
+			           },
+			           {   
+			        	   "backgroundColor":"#4e74c0","text": "退回进件数量  "+objs.BackCount,"values": [objs.BackCount]
 			           }
 			           ]
 	};
@@ -180,6 +185,7 @@ function tjtxs(obj,type){
 	$(".right").hide();
 	$("#mainPage").show();
 	$("#backk").click(function(){
+		 $("#backk").attr('disabled',true);
 		xzcy(obj1,type);
 	})
 }

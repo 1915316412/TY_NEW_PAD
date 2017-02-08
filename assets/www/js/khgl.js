@@ -5,10 +5,14 @@ $("#mainPage").html("<div class='title'>客户管理</div>"+
                     "<div class='content'>" +
                         "<div class='box khgl' onclick='newUser()'><img src='images/xjkh.jpg'/><span>新建客户</span></div>"+
                         "<div class='box khgl' onclick='editUser()'><img src='images/khwh.jpg'/><span>客户维护</span></div>"+
-                        "<div class='box khgl' onclick='myzbgl()'><img src='images/khwh.jpg'/><span>众包管理</span></div>"+
+                        "<div class='box wdsy5' id='edpggj'><img src='images/jljlxx.png'/><span>额度评估工具</span></div>"+
                     "</div>");
     $(".right").hide();
     $("#mainPage").show();
+    $("#edpggj").click(function(){
+		  $("#edpggj").attr('disabled',"true");
+		  edpggj();
+	  });
 }
 //新建客户
 function newUser(){
@@ -17,7 +21,7 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' onclick='mykh
                     "<div class='content' style='height:320px;padding-top:80px;background:url(images/book.jpg) no-repeat center center;'>" +
                         "<p>客户姓名:<input type='text' id ='khname'/></p>"+
                         "<p>证件类型:<select id ='cardType'>" +
-                        "<option value='0'>身份证</option>" +
+                        "<option value='CST0000000000A'>身份证</option>" +
                         "<option value='1'>军官证</option>"+
                         "<option value='2'>护照</option>"+
                         "<option value='3'>香港身份证</option>"+
@@ -52,9 +56,9 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' onclick='mykh
 		        success: function (json) {
 		        	var objs = $.evalJSON(json);
 		        	alert(objs.message);
-		        	document.getElementById("khname").value = ""
+		        	/*document.getElementById("khname").value = ""*/
 		        	document.getElementById("cardId").value = ""
-		        	document.getElementById("phone").value = ""
+		        	/*document.getElementById("phone").value = ""*/
 		        }
 			})
 		}
