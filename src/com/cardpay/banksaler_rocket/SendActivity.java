@@ -34,6 +34,7 @@ public class SendActivity extends Activity implements  android.view.GestureDetec
 private ViewPager viewPager;
 private ArrayList<View> pageview;
 List list =new ArrayList();
+private  String ImaURL="http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id=";
 ImageView images;
 //定义手势检测器实例
 	GestureDetector detector;
@@ -54,9 +55,8 @@ ImageView images;
          for(int a=0;a<imagesUrl.length;a++){
         	 list.add(imagesUrl[a]) ;
          }
-         
         String imageUrl=(String) list.get(0);
-        Picasso.with(this).load("http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+imageUrl)
+        Picasso.with(this).load(ImaURL+imageUrl)
         .into(images);
         //创建手势检测器
         detector = new GestureDetector(this,this); }else{
@@ -96,11 +96,11 @@ ImageView images;
 				if(imaCount<=list.size()-2){
 					imaCount=imaCount+1;
 					 String imageUrl=(String) list.get(imaCount);
-					 Picasso.with(this).load("http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+imageUrl)
+					 Picasso.with(this).load(ImaURL+imageUrl)
 				        .into(images);}else{
 				        	imaCount=list.size()-1;
 				        	String imageUrl=(String) list.get(imaCount);
-				        	 Picasso.with(this).load("http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+imageUrl)
+				        	 Picasso.with(this).load(ImaURL+imageUrl)
 				             .into(images);
 				        	Toast.makeText(this, "最后一张",Toast.LENGTH_SHORT).show();
 				        }
@@ -108,11 +108,11 @@ ImageView images;
 			if(imaCount>=1){
 				imaCount=imaCount-1;
 				 String imageUrl=(String) list.get(imaCount);
-				 Picasso.with(this).load("http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+imageUrl)
+				 Picasso.with(this).load(ImaURL+imageUrl)
 			        .into(images);;
 			}else{
 				 String imageUrl=(String) list.get(0);
-				 Picasso.with(this).load("http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+imageUrl)
+				 Picasso.with(this).load(ImaURL+imageUrl)
 			        .into(images);
 			        Toast.makeText(this,"第一张",Toast.LENGTH_SHORT).show();
 			}
@@ -120,11 +120,11 @@ ImageView images;
 				if(imaCount<=list.size()-2){
 					imaCount=imaCount+1;
 					 String imageUrl=(String) list.get(imaCount);
-					 Picasso.with(this).load("http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+imageUrl)
+					 Picasso.with(this).load(ImaURL+imageUrl)
 				        .into(images);}else{
 				        	imaCount=list.size()-1;
 				        	String imageUrl=(String) list.get(imaCount);
-				        	 Picasso.with(this).load("http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+imageUrl)
+				        	 Picasso.with(this).load(ImaURL+imageUrl)
 				             .into(images);
 				        	Toast.makeText(this, "最后一张",Toast.LENGTH_SHORT).show();
 				        }
@@ -132,11 +132,11 @@ ImageView images;
 				if(imaCount>=1){
 					imaCount=imaCount-1;
 					 String imageUrl=(String) list.get(imaCount);
-					 Picasso.with(this).load("http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+imageUrl)
+					 Picasso.with(this).load(ImaURL+imageUrl)
 				        .into(images);;
 				}else{
 					 String imageUrl=(String) list.get(0);
-					 Picasso.with(this).load("http://192.168.191.2:8080/PCCredit/ipad/JnpadImageBrowse/downLoadYxzlJn.json?id="+imageUrl)
+					 Picasso.with(this).load(ImaURL+imageUrl)
 				        .into(images);
 				        Toast.makeText(this,"第一张",Toast.LENGTH_SHORT).show();
 				}

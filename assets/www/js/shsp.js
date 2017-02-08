@@ -5,17 +5,17 @@ function myshsp(){
 	var userType = window.sessionStorage.getItem("userType");
 	var shspshow;
 	var show1 = "<div class='box shsp1' onclick='cysdrw()'>" +                            
-	"<span>进件初审</span>"+
+	"<span>进件审批</span>"+
 	"</div>"+
-	"<div class='box shsp2' onclick='sdjy()'>" +
-	"<span>审贷决议</span>"+
-	"</div>"+
+	
 	"<div class='box shsp2' onclick='rysp()'>" +
 	"<span>融耀卡审批</span>"+
 	"</div>"+
-	"<div class='box shsp2' onclick='rysp1()'>" +
-	"<span>融耀卡复审</span>"+
+	
+	"<div class='box shsp2' onclick='sdhsw()'>" +
+	"<span>审贷会</span>"+
 	"</div>";
+	
 	/*var show2 = "<div class='box shsp1' onclick='buzhangsp()'>" +
 	"<span>部长审批</span>"+
 	"</div>"+
@@ -220,6 +220,8 @@ function rysp(){
 			for(var i = 0;i<obj.items.length;i++){
 				if(obj.items[i].cardType=="0"){
 					obj.items[i].cardType="身份证";
+				}else if(obj.items[i].cardType=="CST0000000000A"){
+					obj.items[i].cardType="身份证";
 				}else if(obj.items[i].cardType=="1"){
 					obj.items[i].cardType="军官证";
 				}else if(obj.items[i].cardType=="2"){
@@ -274,6 +276,7 @@ function rysp(){
 					"<p><input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
 					"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
 					"<input type='button' class='btn btn-large btn-primary' value='影像资料' id ='xsyxzl'/>"+
+					"<input type='button' class='btn btn-large btn-primary' value='额度评估' id ='edpg'/>"+
 					"<input type='button' class='btn btn-primary btn-large' value='初审结论' id='csjl'/>"+
 					"<input type='button' class='btn btn-large' value='返回' onclick='myshsp()'/></p>"+
 			"</div>");
@@ -313,6 +316,17 @@ function rysp(){
 					alert("请选择一行");
 				}
 			})
+			$("#edpg").click(function() {
+				if ($("input[type='radio']").is(':checked')) {
+
+					var values =$('input[name="checkbox"]:checked').attr("value").split("@");
+					var res ={};
+					res.cardid=values[6];
+					edpgxy(res)
+				}else{
+					alert("请选择一行");
+				}
+			})
 			$("#xsyxzl").click(function() {
 				if ($("input[type='radio']").is(':checked')) {
 					var values =$('input[name="checkbox"]:checked').attr("value").split("@");
@@ -334,6 +348,452 @@ function rysp(){
 
 	})
 
+}
+
+
+
+//额度评估
+function edpgxy(res){
+	   var edpgurl="/ipad/selectAllCustomerApprais.json";
+	var obj;
+	var zfqk;
+	var zcqk;
+	var yyqk;
+	var dwxz;
+	var dwgl;
+	var jzsj;
+	var hyzk;
+	var hjzk;
+	var jycd;
+	var zgzs;
+	var zc;
+	var age;
+	var jkqk;
+	var ggjl;
+	var zw;
+	var grsr;
+	var zwsrb;
+	var syrk;
+	var tjr;
+	var cykh;
+	$.get(wsHost+edpgurl,{cardid:res.cardid},callbackfunction);
+		function  callbackfunction (json){
+			obj = $.evalJSON(json);
+		
+			if(obj.result.zfqk=='A11'){
+				zfqk='自置房屋(无贷款)';
+			}
+			if(obj.result.zfqk=='B7'){
+				zfqk='自置房屋(有贷款)';
+			}
+			if(obj.result.zfqk=='C5'){
+				zfqk='与父母同住';
+			}
+			if(obj.result.zfqk=='D4'){
+				zfqk='租房';
+			}
+			if(obj.result.zfqk=='E0'){
+				zfqk='无房';
+			}
+			
+			
+			if(obj.result.zcqk=='A7'){
+				zcqk='20万以上';
+			}
+			if(obj.result.zcqk=='B4'){
+				zcqk='20万以下';
+			}
+			if(obj.result.zcqk=='C0'){
+				zcqk='无';
+			}
+
+			
+			if(obj.result.yyqk=='A5'){
+				yyqk='完全产权车';
+			}if(obj.result.yyqk=='B2'){
+				yyqk='贷款购车';
+			}if(obj.result.yyqk=='C0'){
+				yyqk='无';
+			}
+			
+			
+			if(obj.result.dwxz=='A16'){
+				dwxz='机关/事业单位';
+			}if(obj.result.dwxz=='B14'){
+				dwxz='国有';
+			}if(obj.result.dwxz=='C13'){
+				dwxz='独资';
+			}if(obj.result.dwxz=='D10'){
+				dwxz='合资';
+			}if(obj.result.dwxz=='E6'){
+				dwxz='股份制';
+			}if(obj.result.dwxz=='F8'){
+				dwxz='私营';
+			}if(obj.result.dwxz=='G4'){
+				dwxz='其他';
+			}if(obj.result.dwxz=='H0'){
+				dwxz='失业无社会救济';
+			}
+			
+			
+			if(obj.result.dwgl=='A3'){
+				dwgl='10年以上';
+			}if(obj.result.dwgl=='B2'){
+				dwgl='5-10年';
+			}if(obj.result.dwgl=='C1'){
+				dwgl='1-5年';
+			}if(obj.result.dwgl=='D0'){
+				dwgl='一年以下';
+			}
+			
+			if(obj.result.jzsj=='A7'){
+				jzsj='6年以上';
+			}if(obj.result.jzsj=='B5'){
+				jzsj='2-6年';
+			}if(obj.result.jzsj=='C2'){
+				jzsj='2年以下';
+			}
+			
+			if(obj.result.hyzk=='A8'){
+				hyzk='已婚有子女';
+			}if(obj.result.hyzk=='B5'){
+				hyzk='已婚无子女';
+			}if(obj.result.hyzk=='C3'){
+				hyzk='未婚';
+			}if(obj.result.hyzk=='D4'){
+				hyzk='离婚';
+			}if(obj.result.hyzk=='E5'){
+				hyzk='再婚';
+			}
+			
+			if(obj.result.hjzk=='A5'){
+				hjzk='本地户口';
+			}if(obj.result.hjzk=='B4'){
+				hjzk='本地农户';
+			}if(obj.result.hjzk=='C2'){
+				hjzk='外地户口';
+			}
+			
+			if(obj.result.jycd=='A5'){
+				jycd='硕士及以上';
+			}if(obj.result.jycd=='B4'){
+				jycd='本科';
+			}if(obj.result.jycd=='C3'){
+				jycd='大专';
+			}if(obj.result.jycd=='D1'){
+				jycd='高中及中专';
+			}if(obj.result.jycd=='E0'){
+				jycd='初中及以下';
+			}
+			
+			if(obj.result.zgzs=='A5'){
+				zgzs='高级';
+			}if(obj.result.zgzs=='B4'){
+				zgzs='中级';
+			}if(obj.result.zgzs=='C3'){
+				zgzs='初级';
+			}if(obj.result.zgzs=='D1'){
+				zgzs='其他';
+			}if(obj.result.zgzs=='E0'){
+				zgzs='无';
+			}
+			
+			if(obj.result.zc=='A5'){
+				zc='高级';
+			}if(obj.result.zc=='B4'){
+				zc='中级';
+			}if(obj.result.zc=='C3'){
+				zc='初级';
+			}if(obj.result.zc=='D1'){
+				zc='其他';
+			}
+			
+			if(obj.result.age=='A3'){
+				age='18-30岁';
+			}if(obj.result.age=='B5'){
+				age='30-45岁';
+			}if(obj.result.age=='C4'){
+				age='45-55岁';
+			}if(obj.result.age=='D2'){
+				age='55岁以上';
+			}
+			
+			
+			if(obj.result.jkqk=='A10'){
+				jkqk='良好';
+			}if(obj.result.jkqk=='B5'){
+				jkqk='一般';
+			}if(obj.result.jkqk=='C0'){
+				jkqk='差';
+			}
+			
+			if(obj.result.ggjl=='A20'){
+				ggjl='无';
+			}if(obj.result.ggjl=='B-5'){
+				ggjl='拖欠记录';
+			}if(obj.result.ggjl=='C-7'){
+				ggjl='不良诉讼记录';
+			}if(obj.result.ggjl=='D-20'){
+				ggjl='治安处罚记录';
+			}if(obj.result.ggjl=='E-40'){
+				ggjl='犯罪记录';
+			}if(obj.result.ggjl=='F0'){
+				ggjl='未确认';
+			}
+			
+			
+			if(obj.result.zw=='A10'){
+				zw='厅局级及以上(公务员)';
+			}if(obj.result.zw=='B7'){
+				zw='处级(公务员)';
+			}
+			if(obj.result.zw=='C5'){
+				zw='科级(公务员)';
+			}if(obj.result.zw=='D3'){
+				zw='一般干部(公务员)';
+			}if(obj.result.zw=='E5'){
+				zw='企业负责人';
+			}if(obj.result.zw=='F3'){
+				zw='中高层管理人员';
+			}if(obj.result.zw=='G1'){
+				zw='一般管理人员';
+			}if(obj.result.zw=='H4'){
+				zw='私营业主';
+			}if(obj.result.zw=='I0'){
+				zw='一般员工';
+			}
+			
+			
+			if(obj.result.grsr=='A26'){
+				grsr='1万元以上';
+			}if(obj.result.grsr=='B22'){
+				grsr='0.8-1万元';
+			}if(obj.result.grsr=='C18'){
+				grsr='0.5-0.8万元';
+			}if(obj.result.grsr=='D12'){
+				grsr='0.3-0.5万元';
+			}if(obj.result.grsr=='E7'){
+				grsr='0.1-0.3万元';
+			}if(obj.result.grsr=='F5'){
+				grsr='0.1万元以下';
+			}if(obj.result.grsr=='G0'){
+				grsr='无';
+			}
+			
+			if(obj.result.zwsrb=='A17'){
+				zwsrb='0';
+			}if(obj.result.zwsrb=='B13'){
+				zwsrb='0-15%';
+			}if(obj.result.zwsrb=='C10'){
+				zwsrb='15-25%';
+			}if(obj.result.zwsrb=='D7'){
+				zwsrb='26-35%';
+			}if(obj.result.zwsrb=='E2'){
+				zwsrb='36-49%';
+			}if(obj.result.zwsrb=='F0'){
+				zwsrb='50%';
+			}
+			
+			
+			if(obj.result.syrk=='A5'){
+				syrk='无';
+			}if(obj.result.syrk=='B4'){
+				syrk='1人';
+			}if(obj.result.syrk=='C3'){
+				syrk='2人';
+			}if(obj.result.syrk=='D2'){
+				syrk='3人';
+			}if(obj.result.syrk=='E0'){
+				syrk='3人以上';
+			}
+			
+			if(obj.result.tjr=='A3'){
+				tjr='本公司员工推荐';
+			}if(obj.result.tjr=='B2'){
+				tjr='其他中介推荐';
+			}if(obj.result.tjr=='C5'){
+				tjr='银行推荐';
+			}if(obj.result.tjr=='D1'){
+				tjr='已担保客户推荐';
+			}if(obj.result.tjr=='E0'){
+				tjr='无';
+			}
+			
+			if(obj.result.cykh=="1"){
+				cykh='是';
+			}else if(obj.result.cykh=="0"){
+				cykh='否';
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			window.scrollTo(0,0);//滚动条回到顶端
+			$("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>进件管理--审贷会--查看额度评估</div>"+  
+			        "<div class='content'>"+
+						                        "<table class='cpTable'>"+  
+													"<tr>"+                     
+						                                "<th colspan='2'>"+
+															//"客户：<input type='text'/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+
+															//"证件号码：<input type='text'/>"+
+						                                "客户:"+obj.result.chinesename+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+
+						                                "证件号码:"+obj.result.cardid+
+														"</th>"+ 
+						                            "</tr>"+
+						                            "<tr>"+                             
+						                            "<th style='width:180px;'>住房情况</th>"+         
+						                            "<td id='zfqk'>" +
+						                         zfqk+
+													"</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>金融资产情况（我行）</th>"+         
+						                            "<td id='zcqk'>" +
+						                         zcqk+
+												    "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>大件消费品拥有情况</th>"+         
+						                            "<td id='yyqk'>" +
+						                         yyqk+
+													"</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>单位性质</th>"+         
+						                            "<td id='dwxz'>" +
+						                         dwxz+
+													"</td>"+ 
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>现工作单位工龄</th>"+         
+						                            "<td id='dwgl'>" +
+						                         dwgl+
+
+													"</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>在现址居住时间</th>"+         
+						                            "<td id='jzsj'>" +
+						                         jzsj+
+						                            "</td>"+ 
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>婚姻状况</th>"+         
+						                            "<td id='hyzk'>" +
+						                         hyzk+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>户籍情况</th>"+         
+						                            "<td id='hjzk'>" +
+						                         hjzk+
+						                            "</td>"+ 
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>教育程度</th>"+         
+						                            "<td id='jycd'>" +
+						                         jycd+
+						                            "</td>"+ 
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>职业资格证书拥有情况</th>"+         
+						                            "<td id='zgzs'>" +
+						                         zgzs+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>职称</th>"+         
+						                            "<td id='zc'>" +
+						                         zc+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>年龄</th>"+         
+						                            "<td id='age'>" +
+						                         age+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>健康情况</th>"+         
+						                            "<td id='jkqk'>" +
+						                         jkqk+
+						                            "</td>"+  
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>公共记录</th>"+         
+						                            "<td id='ggjl'>" +
+						                         ggjl+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>职务</th>"+         
+						                            "<td id='zw'>" +
+						                         zw+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>个人月收入（税前）</th>"+         
+						                            "<td id='grsr'>" +
+						                         grsr+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>债务收入比</th>"+         
+						                            "<td id='zwsrb'>" +
+						                         zwsrb+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>赡养人口</th>"+         
+						                            "<td id='syrk'>" +
+						                         syrk+
+						                            "</td>"+ 
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>推荐人</th>"+         
+						                            "<td id='tjr'>" +
+						                         tjr+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>客户经理主观印象</th>"+         
+						                            "<td id='khjlzgyx'>" +
+						                         obj.result.khjlzgyx+
+						                            "</td>"+ 
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>客户单月可支配收入</th>"+         
+						                            "<td >" +
+   						                         obj.result.khdysr+
+						                            "</td>"+
+						                        "</tr>"+
+						                        "<tr>"+                             
+						                            "<th>是否属于超优客户</th>"+         
+						                            "<td >" +
+   						                         cykh+
+						                            "</td>"+
+						                        "</tr>"+
+						                    "</table>"+
+						                    "<table class='cpTable' style='margin-top:-20px;'>"+ 
+						                        "<tr>"+    
+													"<td style='width:33%;background:#fcd357;border:none;color:#fff;'>总分<font class='pf' >"+ obj.result.zf+"</font></td>"+
+													"<td style='width:33%;background:#f49857;border:none;color:#fff;'>评分等级<font class='pf' id='pfdj'>"+ obj.result.pfdj+"</td>"+
+													"<td style='background:#f26d6e;border:none;color:#fff;'>建议额度<font class='pf' id='jyed'>"+ obj.result.jyed+"</font></td>"+   
+						                        "</tr>"+
+						                    "</table>"+
+						                   
+						                "</div>");
+						$(".right").hide();
+						$("#mainPage").show();
+					  $("#back").click(function(){
+						  rysp();
+					  })
+		}
 }
 //影像资料
 function yxzl11111(res,ryk1,ryk2){
@@ -453,7 +913,7 @@ function yxzl11111(res,ryk1,ryk2){
 			    $(".right").hide();
 			    $("#mainPage").show();
 			    $("#mjjgl2").click(function(){
-			    	yxzl11111(res,phone_type,ryk2,ryk1);
+			    	yxzl11111(res,ryk2,ryk1);
 				});
 				$("#ljjc").click(function(){
 					var phone_type=3;
@@ -487,6 +947,7 @@ function csresult1(res){
 	var	managerList=window.sessionStorage.getItem("managerList");
 	var tjjlurl = "/ipad/intopieces/updateAll.json";
 	var csjlurl = "/ipad/intopieces/csInfo.json";
+	var tjjlurl1 = "/ipad/CustormerSdwUser/insertCS.json";
 	var userId = window.sessionStorage.getItem("userId");
 	$.ajax({
 		url:wsHost+csjlurl,
@@ -552,8 +1013,10 @@ function csresult1(res){
 					"<td><select id ='fduser'>"+"<option value = '0'>请选择</option>"
 					+managerList+
 					"</select></td>"+
+					"</tr>"+
+					"<tr>"+
 					"<th>期限：</th>"+
-					"<td><select>" +
+					"<td><select id='xzqx'>" +
 					"<option value = '1'>1个月</option>" +
 					"<option value = '2'>2个月</option>" +
 					"<option value = '3'>3个月</option>" +
@@ -592,6 +1055,20 @@ function csresult1(res){
 					"<option value = '36'>36个月</option>" +
 					"</select>"+
 					"</td>"+
+					"<th>审贷委一：</th>"+
+					"<td><select id ='sdw1'>"
+					+managerList+
+					"</select></td>"+
+					"</tr>"+
+					"<tr>"+
+					"<th>审贷委二：</th>"+
+					"<td><select id ='sdw2'>"
+					+managerList+
+					"</select></td>"+
+					"<th>审贷委三：</th>"+
+					"<td><select id ='sdw3'>"
+					+managerList+
+					"</select></td>"+
 					"</tr>"+
 					"<tr style='display :none'>"+
 					"<th><label id ='reason' for=reason>原因:</label></th>"+
@@ -601,18 +1078,19 @@ function csresult1(res){
 					"</table>"+
 					"<p>" +
 					"<input type='button' class='btn btn-primary btn-large' value='保存' id='save'/>" +
-					"<input type='button' class='btn btn-large' value='返回' onclick='cysdrw()'/>" +
+					"<input type='button' class='btn btn-large' value='返回' onclick='rysp()'/>" +
 					"</p>"+
 			"</div>");
 			$(".right").hide();
 			$("#mainPage").show();
 			$("#save").click(function(){
+				 $("#save").attr('disabled',false);
+					var sxed= $("#sxed").val();
+					alert(sxed);
+				 if($("#auditresult").val()!='APPROVE'){
 				var number =/^\d+$/;
 				var sxfw= $("#sxqj").val();
-				var sxed= $("#sxed").val();
 				var s = sxfw.split("-");
-
-
 					$.ajax({
 						url:wsHost+tjjlurl,
 						dateType:'json',
@@ -638,7 +1116,32 @@ function csresult1(res){
 							alert(mes.message);
 							rysp();
 						}
-					})
+					})}else{
+						$.ajax({
+							url:wsHost+tjjlurl1,
+							dateType:'json',
+							type:'GET',
+							data:{
+								userId1:$("#cyuser1").val(),
+								userId2:$("#cyuser2").val(),
+								userId3:$("#fduser").val(),
+								user_Id1:$("#sdw1").val(),
+								user_Id2:$("#sdw2").val(),
+								user_Id3:$("#sdw3").val(),
+								lv:$("#decisionRate").val(),//利率
+								pid:obj.customerApplicationInfo.productId,
+								cid:obj.customerApplicationInfo.customerId,
+								decisionAmount:sxed,
+								userId:userId,
+								qx:$("#xzqx").val(),
+							},
+							success:function(json){
+								var mes = $.evalJSON(json);
+								alert(mes.message);
+								rysp();
+							}
+						})
+					}
 			})
 
 			$("#auditresult").change(function (){
@@ -646,7 +1149,9 @@ function csresult1(res){
 				var status = $("select[name=status]").val();
 				if( status == "APPROVE"){
 					$("tr:eq(5)").show();
-					$("tr:eq(8)").hide();
+					$("tr:eq(8)").show();
+					$("tr:eq(9)").show();
+					$("tr:eq(10)").hide();
 //					if($("input[name=decision_amount]").val() == ""){
 //					$("input[name='decision_amount']").after("<label class='error myerror' generated='true' >金额不能为空</label>");   
 //					}
@@ -658,7 +1163,9 @@ function csresult1(res){
 
 				if( status == "REJECTAPPROVE"){
 					$("tr:eq(5)").hide();
-					$("tr:eq(8)").show();
+					$("tr:eq(8)").hide();
+					$("tr:eq(9)").hide();
+					$("tr:eq(10)").show();
 //					if($("textarea[name=decision_refusereason]").val() == ""){
 //					$("textarea[name='decision_refusereason']").after("<label class='error myerror' generated='true' >拒绝原因不能为空</label>");   
 //					}
@@ -666,7 +1173,9 @@ function csresult1(res){
 
 				if( status == "RETURNAPPROVE"){
 					$("tr:eq(5)").hide();
-					$("tr:eq(8)").show();
+					$("tr:eq(8)").hide();
+					$("tr:eq(9)").hide();
+					$("tr:eq(10)").show();
 				}
 
 				if(status =='RETURNAPPROVE'){
@@ -985,6 +1494,8 @@ function cysdrw(){
 			for(var i = 0;i<obj.items.length;i++){
 				if(obj.items[i].cardType=="0"){
 					obj.items[i].cardType="身份证";
+				}else if(obj.items[i].cardType=="CST0000000000A"){
+					obj.items[i].cardType="身份证";
 				}else if(obj.items[i].cardType=="1"){
 					obj.items[i].cardType="军官证";
 				}else if(obj.items[i].cardType=="2"){
@@ -1102,6 +1613,8 @@ function cysdrw(){
 
 					var appId = values[3];
 					var res={};
+					res.customerId = values[2];
+					res.productId =values[0];
 					res.appId = appId;
 					res.currentLoc ="cysdrw()";
 					xszlxx(res);
@@ -1720,13 +2233,14 @@ function xszp1(res,phone_type){
 		}
 //显示调查模板
 function xszlxx(res){
-	var dcmburl="/ipad/product/browerModel.json";
+	var dcmburl="/ipad/user/ckdcmb.json";
 	$.ajax({
 		url:wsHost+dcmburl,
 		type: "GET",
 		dataType:'json',
 		data:{
-			appId:res.appId,
+			customerId:res.customerId ,
+			productId:res.productId ,
 		},
 		success: function (json){
 			var obj = $.evalJSON(json);
@@ -1796,6 +2310,7 @@ function xszlxx(res){
 function csresult(res){
 	var	managerList=window.sessionStorage.getItem("managerList");
 	var tjjlurl = "/ipad/intopieces/updateAll.json";
+	var tjjlurl1 = "/ipad/CustormerSdwUser/insertCS.json";
 	var csjlurl = "/ipad/intopieces/csInfo.json";
 	var userId = window.sessionStorage.getItem("userId");
 	$.ajax({
@@ -1862,8 +2377,11 @@ function csresult(res){
 					"<td><select id ='fduser'>"+
 					managerList+
 					"</select></td>"+
+					"</tr>"+
+					
+					"<tr>"+
 					"<th>期限：</th>"+
-					"<td><select>" +
+					"<td ><select id='xzqx'>" +
 					"<option value = '1'>1个月</option>" +
 					"<option value = '2'>2个月</option>" +
 					"<option value = '3'>3个月</option>" +
@@ -1908,6 +2426,24 @@ function csresult(res){
 					"<td><textarea name='decisionRefusereason' id='decisionRefusereason'></textarea>" +
 					"</td>" +
 					"</tr>"+
+					
+					"<tr>"+
+					"<th>审贷委一：</th>"+
+					"<td><select id ='sdw1'>"+
+					managerList+
+					"</select></td>"+
+					"<th>审贷委二：</th>"+
+					"<td><select id ='sdw2'>"+
+					managerList+
+					"</select></td>"+
+					"</tr>"+
+					"<tr>"+
+					"<th>审贷委三:</th>"+
+					"<td><select id ='sdw3'>"+
+					managerList+
+					"</select></td>"+
+					"</tr>"+
+					
 					"</table>"+
 					"<p>" +
 					"<input type='button' class='btn btn-primary btn-large' value='保存' id='save'/>" +
@@ -1917,14 +2453,16 @@ function csresult(res){
 			$(".right").hide();
 			$("#mainPage").show();
 			$("#save").click(function(){
+				 $("#save").attr('disabled',false);
 				var number =/^\d+$/;
 				var sxfw= $("#sxqj").val();
 				var sxed= $("#sxed").val();
 				var s = sxfw.split("-");
-
-				if((Number(sxed)>=Number(s[0])&&Number(sxed)<=Number(s[1])&&number.test(sxed)&&$("#auditresult").val()=="APPROVE")||$("#auditresult").val()!="APPROVE"){
+				//if((Number(sxed)>=Number(s[0])&&Number(sxed)<=Number(s[1])&&number.test(sxed)&&$("#auditresult").val()=="APPROVE")||$("#auditresult").val()!="APPROVE"){
 
 					//$("#save").attr('disabled',"true");
+				
+				if($("#auditresult").val()!='APPROVE'){
 					$.ajax({
 						url:wsHost+tjjlurl,
 						dateType:'json',
@@ -1952,16 +2490,46 @@ function csresult(res){
 						}
 					})
 				}else{
-					alert("请输入正确的授信金额");
+					$.ajax({
+						url:wsHost+tjjlurl1,
+						dateType:'json',
+						type:'GET',
+						data:{
+							userId1:$("#cyuser1").val(),
+							userId2:$("#cyuser2").val(),
+							userId3:$("#fduser").val(),
+							user_Id1:$("#sdw1").val(),
+							user_Id2:$("#sdw2").val(),
+							user_Id3:$("#sdw3").val(),
+							lv:$("#decisionRate").val(),//利率
+							pid:obj.customerApplicationInfo.productId,
+							cid:obj.customerApplicationInfo.customerId,
+							decisionAmount:sxed,
+							userId:userId,
+							qx:$("#xzqx").val(),
+						},
+						success:function(json){
+							var mes = $.evalJSON(json);
+							alert(mes.message);
+							cysdrw();
+						}
+					})
 				}
+				/*}else{
+					alert("请输入正确的授信金额");
+				}*/
 			})
 
-			$("#auditresult").change(function (){
+			$("#auditresult").change(function
+					(){
 
 				var status = $("select[name=status]").val();
 				if( status == "APPROVE"){
 					$("tr:eq(5)").show();
-					$("tr:eq(8)").hide();
+					$("tr:eq(8)").show();
+					$("tr:eq(9)").hide();
+					$("tr:eq(10)").show();
+					$("tr:eq(11)").show();
 //					if($("input[name=decision_amount]").val() == ""){
 //					$("input[name='decision_amount']").after("<label class='error myerror' generated='true' >金额不能为空</label>");   
 //					}
@@ -1973,7 +2541,10 @@ function csresult(res){
 
 				if( status == "REJECTAPPROVE"){
 					$("tr:eq(5)").hide();
-					$("tr:eq(8)").show();
+					$("tr:eq(9)").show();
+					$("tr:eq(8)").hide();
+					$("tr:eq(10)").hide();
+					$("tr:eq(11)").hide();
 //					if($("textarea[name=decision_refusereason]").val() == ""){
 //					$("textarea[name='decision_refusereason']").after("<label class='error myerror' generated='true' >拒绝原因不能为空</label>");   
 //					}
@@ -1981,7 +2552,10 @@ function csresult(res){
 
 				if( status == "RETURNAPPROVE"){
 					$("tr:eq(5)").hide();
-					$("tr:eq(8)").show();
+					$("tr:eq(9)").show();
+					$("tr:eq(8)").hide();
+					$("tr:eq(10)").hide();
+					$("tr:eq(11)").hide();
 				}
 
 				if(status =='RETURNAPPROVE'){
@@ -2815,7 +3389,7 @@ function xssdjy(res){
 					"</tr>"+
 					"<tr style='display :none'>"+
 					"<th><label id ='reason' for=reason>原因:</label></th>"+
-					"<td><textarea name='decisionRefusereason' id='decisionRefusereason'></textarea>" +
+					"<td><textarea  id='decisionRefusereason'></textarea>" +
 					"</td>" +
 					"</tr>"+
 					"</table>"+

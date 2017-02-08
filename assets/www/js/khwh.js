@@ -614,6 +614,9 @@ function gxkhwhjh(objs){
 var csjh;
 //客户维护-客户催收日志
 function khcsrz(){
+	var aaa;
+	var a=window.sessionStorage.getItem("qxckUser");
+	var objs = $.evalJSON(a);
 	var userId = window.sessionStorage.getItem("userId");
 	var wsLoginUrl = "/ipad/product/findRiskCustomerCollectionPlansByFilter.json"+"?userId="+userId;
 	var tmp ="";
@@ -663,9 +666,15 @@ function khcsrz(){
 				}
 			}
 			result[j]=tmp
-
+			for(var i=0;i<objs.listsize;i++){
+				aaa=aaa+"<option id='userId' value ='"+objs.list[i].userId+"'>"+objs.list[i].displayName+"组"+objs.list[i].name+"</option>";
+			}
 			window.scrollTo(0,0);//滚动条回到顶端
-			$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='editUser()'/>客户维护-客户催收日志</div>"+  
+			$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='editUser()'/>客户维护-客户催收日志" +
+					"<select id ='cxkhcs'  onchange='cxkhcs(this)'><option value = '0'>其他客户经理催收详情</option>"+
+					aaa+
+					"</select>"+
+					"</div>"+  
 					"<div class='content'>"+
 					"<table class='cpTable' style='text-align:center;'>"+
 					"<tr>"+  
@@ -732,6 +741,12 @@ function khcsrz(){
 	})
 } 
 
+function cxkhcs(){
+	if($("#cxkhcs").val()!="0"){
+		$("#cxkhcs").attr('disabled',false);
+		ckqtcszk($("#cxkhcs").val());
+	}
+}
 //变更催收计划
 function bgcsjh(csjh){
 	 var tmp=
@@ -797,3 +812,107 @@ function bgcsjh(csjh){
 			}})
 	})
 }   
+
+
+
+
+//客户维护-客户催收日志
+function ckqtcszk(userId){
+	var wsLoginUrl = "/ipad/product/findRiskCustomerCollectionPlansByFilter.json"+"?userId="+userId;
+	var tmp ="";
+	var result={};
+	var page=1;
+	var j = 1;
+	var obj;
+	$.ajax({
+		url:wsHost + wsLoginUrl,
+		type: "GET",
+		dataType:'json',
+		success: function (json){
+			obj = $.evalJSON(json);
+			csjh=obj;
+			for(var i = 0;i<obj.totalCount;i++){
+				if(obj.items[i].endResult=="collection"){
+					obj.items[i].endResult="催收中";
+				}else if(obj.items[i].endResult=="repaymentcommitments"){
+					obj.items[i].endResult="承诺还款";
+				}else if(obj.items[i].endResult=="losecontact"){
+					obj.items[i].endResult="失联";
+				}else if(obj.items[i].endResult=="reject"){
+					obj.items[i].endResult="拒绝";
+				}else if(obj.items[i].endResult=="hang"){
+					obj.items[i].endResult="挂起";
+				}else if(obj.items[i].endResult=="continuecollection"){
+					obj.items[i].endResult="继续催收";
+				}else if(obj.items[i].endResult=="complete"){
+					obj.items[i].endResult="催收完成";
+				}
+				tmp=tmp+"<td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.items[i].id+"@"+obj.items[i].chineseName+"@"+
+				obj.items[i].collectionMethod+"@"+obj.items[i].implementationObjective+"@"+obj.items[i].collectionTime+"@"+obj.items[i].endResult+
+				"@"+obj.items[i].collectionEndtime+"@"+obj.items[i].created_time+"'/>"+"</span></td>"+
+				"<td>"+obj.items[i].chineseName+"</td>"+
+				"<td>"+obj.items[i].collectionMethod+"</td>"+
+				"<td>"+obj.items[i].implementationObjective+"</td>"+
+				"<td>"+obj.items[i].collectionTime+"</td>"+
+				"<td>"+obj.items[i].created_time+"</td>"+
+				"<td>"+obj.items[i].collectionEndtime+"</td>"+
+				"<td>"+obj.items[i].endResult+"</td>"+
+				"<td>"+obj.items[i].hkje+"</td>"+
+				"<td>"+obj.items[i].crhksj+"</td>";
+				if((i+1)%5==0){
+					result[j]=tmp;
+					j++;
+					tmp="";
+				}
+			}
+			result[j]=tmp
+			window.scrollTo(0,0);//滚动条回到顶端
+			$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='khcsrz()'/>客户维护-客户催收日志" +
+					"</div>"+  
+					"<div class='content'>"+
+					"<table class='cpTable' style='text-align:center;'>"+
+					"<tr>"+  
+					"<th></th>"+
+					"<th>客户姓名</th>"+
+					"<th>催收方式</th>"+
+					"<th>催收目标</th>"+
+					"<th>催收天数</th>"+
+					"<th>催收开始时间</th>"+
+					"<th>催收结束时间</th>"+
+					"<th>催收结果</th>"+
+					"<th>承诺还款金额</th>"+
+					"<th>承诺还款时间</th>"+
+					"</tr>"+
+					"<tr id = 'cslb' onclick='check(this)'>"+   
+					result[page]+
+					"</tr>"+
+					"</table>"+
+					"<p>"+
+					"<input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
+					"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
+					"<input type='button' class='btn btn-large btn-primary' value='返回' onclick = 'khcsrz()' id = 'fh'/>"+
+					"</p>"+
+			"</div>");
+			$(".right").hide();
+			$("#mainPage").show();
+			$("#xyy").click(function(){
+				page=page+1;
+				if(result[page]){
+					$("#cslb").html(result[page]);
+				}else{
+					alert("当前已经是最后一页");
+					page=page-1;
+				}
+			})
+			$("#syy").click(function(){
+				page=page-1; 
+				if(result[page]){
+					$("#cslb").html(result[page]);
+				}else{
+					alert("当前已经是第一页");
+					page = page+1;
+				}
+			})
+		}
+	})
+} 

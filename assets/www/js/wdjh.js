@@ -10,11 +10,13 @@ function mywdjh(){
 			"<div class='box jhgl' onclick='yjjdlr()'><img src='images/gzjh.png' style='margin-left:-15px;'/><span>业绩进度录入</span></div>"+ 
 			"<div class='box jhgl' onclick='yjjdcx()'><img src='images/gzjh.png' style='margin-left:-15px;'/><span>业绩进度查看</span></div>"+ 
 			"<div class='box jhgl' onclick='myshsp()'><img src='images/gzjh.png' style='margin-left:-15px;'/><span>审核审批</span></div>"+ 
-			"<div class='box jhgl' onclick='sqryk()'><img src='images/xxzl.png' style='margin-left:-15px;'/><span>融耀卡申请</span></div>"+ 
+			"<div class='box jhgl' onclick='sqryk()'><img src='images/xxzl.png' style='margin-left:-15px;'/><span>融耀卡申请</span></div>"+
+			"<div class='box jhgl' onclick='xdkh()'><img src='images/xxzl.png' style='margin-left:-15px;'/><span>信贷客户详情</span></div>"+ 
 	"</div>");
 	$(".right").hide();
 	$("#mainPage").show();
 }
+
 var sqry={};
 var sousuok={};
 //申请融耀卡
@@ -109,9 +111,11 @@ function sqryk(){
 					objs.userId = window.sessionStorage.getItem("userId");
 					var fxsxurl ="/ipad/NotifictionMessage/managerbrowse.json";
 					var fxsxurl1 ="/ipad/customer/selectByCardId3.json?cardId="+objs.CardId;
+					var fxsxurl2 ="/ipad/customer/findJqUser.json?cardId="+objs.CardId;
 					var url = fxsxurl+"?userId="+window.sessionStorage.getItem("userId");
 					var custormerid="";
 					var custormerid1="";
+					var custormerjq="";
 					$.ajax({
 						url:wsHost + url,
 						type: "GET",
@@ -134,6 +138,18 @@ function sqryk(){
 										obj = $.evalJSON(json);
 										if(obj.size>0){
 											custormerid1=1;
+										}else{
+											$.ajax({
+												url:wsHost + fxsxurl2,
+												type: "GET",
+												dataType:'json',
+												async: false,
+												success: function (json) {
+													obj = $.evalJSON(json);
+													if(obj.size>0){
+														custormerjq=1;
+													}
+												}})
 										}
 									}})
 							}
@@ -141,7 +157,9 @@ function sqryk(){
 								alert("对不起,该客户时在风险客户名单里面,不能申请!!!!")
 							}else if(custormerid1==1){
 								alert("对不起,该客户时在黑名单里面,不能申请!!!!")
-							}else if(custormerid1!=1 & custormerid!=1){
+							}else if(custormerjq==1){
+								alert("对不起,该客户有未结清贷款,不能申请进件!!!!")
+							}else if(custormerid1!=1 & custormerid!=1 & custormerjq!=1){
 								newUser61(objs);
 							}
 							}})
@@ -243,9 +261,11 @@ for(var i = 0;i<obj.size;i++){
 					objs.userId = window.sessionStorage.getItem("userId");
 					var fxsxurl ="/ipad/NotifictionMessage/managerbrowse.json";
 					var fxsxurl1 ="/ipad/customer/selectByCardId3.json?cardId="+objs.CardId;
+					var fxsxurl2 ="/ipad/customer/findJqUser.json?cardId="+objs.CardId;
 					var url = fxsxurl+"?userId="+window.sessionStorage.getItem("userId");
 					var custormerid="";
 					var custormerid1="";
+					var custormerjq="";
 					$.ajax({
 						url:wsHost + url,
 						type: "GET",
@@ -268,6 +288,18 @@ for(var i = 0;i<obj.size;i++){
 										obj = $.evalJSON(json);
 										if(obj.size>0){
 											custormerid1=1;
+										}else{
+											$.ajax({
+												url:wsHost + fxsxurl2,
+												type: "GET",
+												dataType:'json',
+												async: false,
+												success: function (json) {
+													obj = $.evalJSON(json);
+													if(obj.size>0){
+														custormerjq=1;
+													}
+												}})
 										}
 									}})
 							}
@@ -275,6 +307,8 @@ for(var i = 0;i<obj.size;i++){
 								alert("对不起,该客户时在风险客户名单里面,不能申请!!!!")
 							}else if(custormerid1==1){
 								alert("对不起,该客户时在黑名单里面,不能申请!!!!")
+							}else if(custormerjq==1){
+								alert("对不起,该客户有未结清贷款,不能申请进件!!!!")
 							}else if(custormerid1!=1 & custormerid!=1){
 								newUser61(objs);
 							}
@@ -363,6 +397,10 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
                         "<span>其他收入</span>"+
                     "</div>"+
                     "</div>"+
+                    "<div class='spinner'>"+
+					  "<div class='bounce1'></div>"+
+					" <div class='bounce2'></div>"+
+					  "<div class='bounce2'></div></div>"+
                     "<div class='bottom-content'>"+
                     "<div class='box jjgl' id = 'sfzm' style='margin-left:150px;margin-right:50px;display:inline-block;'>" +
                     "<img src='images/ugc_icon_type_photo.png' />" +
@@ -387,6 +425,7 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
 				"</div>");
     $(".right").hide();
     $("#mainPage").show();
+    $('.spinner').hide();
     $("#jycs").click(function(){
     	var content=1;
     	var tel;
@@ -479,9 +518,14 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
 								  "<div class='bottom-content'><p>"+
 								"<input type='button' class='btn btn-large btn-primary' value='返回' id = 'xyb'/>"+
 								 "</div></p>"+
+								 "<div class='spinner'>"+
+								  "<div class='bounce1'></div>"+
+									" <div class='bounce2'></div>"+
+									  "<div class='bounce2'></div></div>"+
 						"</div>");
 		    $(".right").hide();
 		    $("#mainPage").show();
+		    $('.spinner').hide();
 		    $("#ljjc").click(function(){
 		    	  var content=3;
 		      	var tel;
@@ -511,6 +555,7 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
 		    });
 	});
 }
+var rykCountIma=0;
 var obj1=[];
 var objs1=[];
 var savesuccess=function(data){
@@ -529,6 +574,7 @@ var savesuccess=function(data){
 	aa1=aa1.replace("]", "");
 	objs1=aa1.split(",");
 	var applicationId=null;
+	$('.spinner').show();
 	for(var ab=0;ab<data.size;ab++){
 		 var fileURI ="file://"+objs1[ab].trim();
     	 var fileName =obj1[ab].trim();
@@ -546,7 +592,12 @@ var error=function(){
 };
 
 function uSuccesss() {  
-    alert('上传成功');
+	rykCountIma=rykCountIma+1;
+	if(rykCountIma==obj1.length){
+		$('.spinner').hide();
+		alert('上传成功');
+		rykCountIma=0;
+	}
 }
 
 
@@ -658,8 +709,9 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
 
 
 
-
+var sqrykgrzc;
 function newUser91 (addIntopiece){
+	sqrykgrzc=addIntopiece;
 	var objs;
 	 var yxzlur1l="/ipad/JnpadImageBrowse/findLocalImageByType1.json";
 	$.get(wsHost+yxzlur1l,{customerId:addIntopiece.customerId,productId:addIntopiece.productId},callbackfunction);
@@ -702,8 +754,8 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
                         "<span>身份证明</span>"+
                         "<span class='tongzhi'>"+objs.size7+"</span>"+
                     "</div>"+
-                    "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
-                    "<img src='images/wenjian.png' id='grzc' />" +
+                    "<div class='box jjgl' onclick='sqrykgrzl()' style='float:none;display:inline-block;margin-right:50px;'>" +
+                    "<img src='images/wenjian.png'  />" +
                         "<span>个人资产</span>"+
                         "<span class='tongzhi'>"+objs.size8+"</span>"+
                     "</div>"+
@@ -719,12 +771,13 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
             "</div>"+
 						"</div>"+
 						  "<div class='bottom-content'><p>"+
-						"<input type='button' class='btn btn-large btn-primary' value='下一步' id = 'xyb'/>"+
+						"<input type='button' class='btn btn-large btn-primary' value='下一步' id = 'rrksq'/>"+
 						 "</div></p>"+
 				"</div>");
     $(".right").hide();
     $("#mainPage").show();
-	$("#xyb").click(function(){
+	$("#rrksq").click(function(){
+		 $("#rrksq").attr('disabled',true);
 		sqrykk();
 	});
 	
@@ -803,6 +856,10 @@ $("#jydj").click(function(){
 	});
 }}
 var phoneTYPE;
+function sqrykgrzl(){
+	var phone_type=8;
+	deleteIma1(sqrykgrzc,phone_type);
+}
 function aa(phoneIma,phone_type){
 	phoneTYPE=phone_type;
 	var applicationId = null;
@@ -1845,7 +1902,7 @@ function pxjh(){
 					"<p><input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
 					"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
 					"<input type='button' class='btn btn-large btn-primary' value='已查看' id = 'yck'/>"+
-					"<input type='button' class='btn btn-large' value='返回' onclick='tz()'/></p>"+
+					//"<input type='button' class='btn btn-large' value='返回' onclick='tz()'/></p>"+
 			"</div>");
 			$(".right").hide();
 			$("#mainPage").show();
@@ -2078,7 +2135,7 @@ function yjjdcx(){
 				
 				head+body+
 				"</table>"+
-				"<p><input type='button' class='btn btn-large btn-primary' value='修改业绩进度' id = 'save' onclick='yjjdxg()' />"+
+				/*"<p><input type='button' class='btn btn-large btn-primary' value='修改业绩进度' id = 'save' onclick='yjjdxg()' />"+*/
 				"<input type='button' class='btn btn-large' value='返回' onclick='mywdjh()'/></p>"+
 		"</div>");
 		$(".right").hide();

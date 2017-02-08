@@ -1,7 +1,7 @@
 function myzbgl(){
 	
 	window.scrollTo(0,0);//滚动条回到顶端
-	$("#mainPage").html("<div class='title'>众包管理</div>"+  
+	$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='mywdsy()'/>众包管理</div>"+  
 			"<div class='content'>" +
 			"<div class='box shsp1' onclick='zbjjlb()'>" +                            
 			"<span>众包进件</span>"+
@@ -40,6 +40,8 @@ function zbjjlb(){
 				var obj = $.evalJSON(json);
 			for(var i = 0;i<obj.list.length;i++){
 				if(obj.list[i].cardType=="0"){
+					obj.list[i].cardType="身份证";
+				}else if(obj.list[i].cardType=="CST0000000000a"){
 					obj.list[i].cardType="身份证";
 				}else if(obj.list[i].cardType=="1"){
 					obj.list[i].cardType="军官证";
@@ -206,8 +208,9 @@ function zbglxx(){
 	var result={};
 	var page=1;
 	var j = 1;
+	var zbzt;
 	var head ="<tr>"+                             
-	"<th></th>"+  
+	"<th>众包状态</th>"+
 	"<th>客户姓名</th>"+
 	"<th>产品名称</th>"+
 	"<th>申请金额</th>"+
@@ -215,9 +218,9 @@ function zbglxx(){
 	"<th>合同金额</th>"+
 	"<th>证件号码</th>"+
 	"<th>审核状态</th>"+
-	"<th>节点名称</th>"+
 	"<th>退回原因</th>"+
 	"<th>拒绝原因</th>"+
+	"<th>所属客户经理</th>"+
 	"</tr>";
 	$.ajax({
 		url:wsHost + zbglxxurl,
@@ -229,37 +232,37 @@ function zbglxx(){
 		},
 		success: function (json) {
 			obj = $.evalJSON(json);
-			for(var i = 0;i<obj.items.length;i++){
-				if(obj.items[i].status=="save"){
-					obj.items[i].status="未申请";
-				}else if(obj.items[i].status=="audit"){
-					obj.items[i].status="已申请";
-				}else if(obj.items[i].status=="returnedToFirst"){
-					obj.items[i].status="退回至客户经理";
-				}else if(obj.items[i].status=="end"){
-					obj.items[i].status="放款成功";
-				}else if(obj.items[i].status=="nopass"){
-					obj.items[i].status="申请未通过";
-				}else if(obj.items[i].status=="refuse"){
-					obj.items[i].status="被拒接";
-				}else if(obj.items[i].status=="approved"){
-					obj.items[i].status="审批结束";
-				}else if(obj.items[i].status=="succeed"){
-					obj.items[i].status="申请成功";
+			for(var i = 0;i<obj.size;i++){
+				if(obj.result[i].status==""){
+					obj.result[i].status="未申请产品";
+				}else if(obj.result[i].status=="audit"){
+					obj.result[i].status="已申请";
+				}else if(obj.result[i].status=="returnedToFirst" || obj.result[i].status=="nopass_replenish"){
+					obj.result[i].status="退回至客户经理";
+				}else if(obj.result[i].status=="end" ||obj.result[i].status=="approved" ){
+					obj.result[i].status="申请成功";
+				}else if(obj.result[i].status=="refuse" || obj.result[i].status=="nopass"){
+					obj.result[i].status="被拒接";
 				}
-				tmp=tmp+"<tr onclick='check(this)'>"+
-				"<td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.items[i].chineseName+"@"+
-				obj.items[i].productName+"'"+"/>"+"</span></td>"+
-				"<td>"+obj.items[i].chineseName+"</td>"+
-				"<td>"+obj.items[i].productName+"</td>"+
-				"<td>"+obj.items[i].applyQuota+"</td>"+
-				"<td>"+obj.items[i].finalApproval+"</td>"+
-				"<td>"+obj.items[i].reqlmt+"</td>"+
-				"<td>"+obj.items[i].cardId+"</td>"+
-				"<td>"+obj.items[i].status+"</td>"+
-				"<td>"+obj.items[i].nodeName+"</td>"+
-				"<td>"+obj.items[i].fallBackReason+"</td>"+
-				"<td>"+obj.items[i].refusqlReason+"</td>"+
+				
+				
+				if(obj.result[i].displayName==""){
+					zbzt="<td>未被抢单</td>";
+				}else{
+					zbzt="<td>已被抢单</td>";
+				}
+				tmp=tmp+"<tr>"+
+				zbzt+
+				"<td>"+obj.result[i].chineseName+"</td>"+
+				"<td>"+obj.result[i].productName+"</td>"+
+				"<td>"+obj.result[i].applyQuota+"</td>"+
+				"<td>"+obj.result[i].final_approval+"</td>"+
+				"<td>"+obj.result[i].actual_quote+"</td>"+
+				"<td>"+obj.result[i].cardId+"</td>"+
+				"<td>"+obj.result[i].status+"</td>"+
+				"<td>"+obj.result[i].fallBackReason+"</td>"+
+				"<td>"+obj.result[i].fallBackReason+"</td>"+
+				"<td>"+obj.result[i].displayName+"</td>"+
 				"</tr>";
 
 				if((i+1)%5==0){

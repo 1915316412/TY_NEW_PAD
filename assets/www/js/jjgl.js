@@ -210,9 +210,11 @@ $("#mainPage").html("<div class='title'>" +
 			allobj.chineseName = values[2];
 			var fxsxurl ="/ipad/NotifictionMessage/managerbrowse.json";
 			var fxsxurl1 ="/ipad/customer/selectByCardId3.json?cardId="+allobj.cardId;
+			var fxsxurl2 ="/ipad/customer/findJqUser.json?cardId="+allobj.cardId;
 			var url = fxsxurl+"?userId="+window.sessionStorage.getItem("userId");
 			var custormerid="";
 			var custormerid1="";
+			var custormerjq="";
 			$.ajax({
 				url:wsHost + url,
 				type: "GET",
@@ -243,8 +245,20 @@ $("#mainPage").html("<div class='title'>" +
 					}else if(custormerid1==1){
 						alert("对不起,该客户时在黑名单里面,不能申请进件!!!!")
 					}else if(custormerid1!=1 & custormerid!=1){
-						newUser6 (productInfo);
-					}
+						$.ajax({
+							url:wsHost + fxsxurl2,
+							type: "GET",
+							dataType:'json',
+							async: false,
+							success: function (json) {
+								obj = $.evalJSON(json);
+								if(obj.size>0){
+								alert("对不起,该客户有未结清的贷款,不能申请进件!!!!")
+								}else{
+									newUser6 (productInfo);
+								}
+							}})
+				}
 					}})
 		}else{
 			alert("请选择一行");
@@ -308,6 +322,7 @@ function sousuo(){
 	window.scrollTo(0,0);//滚动条回到顶端
 	$("#mainPage").html("<div class='title'>" +
 	            		    "<img src='images/back.png' onclick='myjjgl()'/>进件管理" +
+	            		    "<input type='text' id='kexm' style='margin:13px 40px;' placeholder='搜索' onchange='sousuo(this)'/>" +
 	            		"</div>"+  
 						"<div class='content'>" +
 	    					"<div class='jjstep'>" +
@@ -362,9 +377,11 @@ function sousuo(){
 			allobj.chineseName = values[2];
 			var fxsxurl ="/ipad/NotifictionMessage/managerbrowse.json";
 			var fxsxurl1 ="/ipad/customer/selectByCardId3.json?cardId="+allobj.cardId;
+			var fxsxurl2 ="/ipad/customer/findJqUser.json?cardId="+allobj.cardId;
 			var url = fxsxurl+"?userId="+window.sessionStorage.getItem("userId");
 			var custormerid="";
 			var custormerid1="";
+			var custormerjq="";
 			$.ajax({
 				url:wsHost + url,
 				type: "GET",
@@ -387,6 +404,18 @@ function sousuo(){
 								obj = $.evalJSON(json);
 								if(obj.size>0){
 									custormerid1=1;
+								}else{
+									$.ajax({
+										url:wsHost + fxsxurl2,
+										type: "GET",
+										dataType:'json',
+										async: false,
+										success: function (json) {
+											obj = $.evalJSON(json);
+											if(obj.size>0){
+												custormerjq=1;
+											}
+										}})
 								}
 							}})
 					}
@@ -394,6 +423,8 @@ function sousuo(){
 						alert("对不起,该客户时在风险客户名单里面,不能申请进件!!!!")
 					}else if(custormerid1==1){
 						alert("对不起,该客户时在黑名单里面,不能申请进件!!!!")
+					}else if(custormerjq==1){
+						alert("对不起,该客户有未结清贷款,不能申请进件!!!!")
 					}else if(custormerid1!=1 & custormerid!=1){
 						newUser6 (productInfo);
 					}
@@ -543,8 +574,8 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
                 "<span>担保</span>"+
             "</div>"+
 						"</div>"+
-						  "<div class='bottom-content'><p>"+
-						"<input type='button' class='btn btn-large btn-primary' value='下一步' id = 'xyb'/>"+
+						  "<div class='bottom-content' id = 'xyb'><p>"+
+						"<input type='button' class='btn btn-large btn-primary' value='下一步' />"+
 						 "</div></p>"+
 				"</div>");
     $(".right").hide();
@@ -715,7 +746,6 @@ var success=function(data){
 	}
 };
 var error=function(){
-	alert("获取照片失败");
 };
 
 function uuuSuccesss() {  
@@ -863,8 +893,9 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
 	});
 }
 
-
+var grzibgh;
 function newUser9 (addIntopiece){
+	grzibgh=addIntopiece;
 	var objs;
 	 var yxzlur1l="/ipad/JnpadImageBrowse/findLocalImageByType1.json";
 	$.get(wsHost+yxzlur1l,{customerId:addIntopiece.customerId,productId:addIntopiece.productId},callbackfunction);
@@ -908,8 +939,8 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
                         "<span>身份证明</span>"+
                         "<span class='tongzhi'>"+objs.size7+"</span>"+
                     "</div>"+
-                    "<div class='box jjgl' id='yxzlxx' style='float:none;display:inline-block;margin-right:50px;'>" +
-                    "<img src='images/wenjian.png' id='grzc' />" +
+                    "<div class='box jjgl' onclick='grzcbg()'  style='float:none;display:inline-block;margin-right:50px;'>" +
+                    "<img src='images/wenjian.png' />" +
                         "<span>个人资产</span>"+
                         "<span class='tongzhi'>"+objs.size8+"</span>"+
                     "</div>"+
@@ -949,7 +980,8 @@ $("#mainPage").html("<div class='title' id='mjjgl2'><img src='images/back.png'/>
 	});$("#sfzm").click(function(){
 		var phone_type=7;
 		deleteIma(addIntopiece,phone_type);
-	});$("grzc").click(function(){
+	});$("grzczltp").click(function(){
+		alert('grzc');
 		var phone_type=8;
 		deleteIma(addIntopiece,phone_type);
 	});$("#jf").click(function(){
@@ -1010,6 +1042,11 @@ $("#jydj").click(function(){
 		});
 	});
 }}
+function grzcbg(){
+	var phone_type=8;
+	deleteIma(grzibgh,phone_type);
+
+}
 var phoneTYPE;
 function aa(phoneIma,phone_type){
 	phoneTYPE=phone_type;
@@ -1237,7 +1274,7 @@ var allzi;
 function dcmbadd(addIntopiece){
 	allzi=addIntopiece;
 	window.scrollTo(0,0);//滚动条回到顶端
-	$("#mainPage").html("<div class='title' id='newUsers1'><img src='images/back.png'/>调查模板采集</div>"+  
+	$("#mainPage").html("<div class='title' ><img src='images/back.png' id='newUsers1'/>调查模板采集</div>"+  
 			"<div class='content' style='text-align:center;'>" +  
 			"<div class='jjstep'>" +
 			   "<div class='step1' >"+addIntopiece.productName+"</div>"+
@@ -1258,12 +1295,17 @@ function dcmbadd(addIntopiece){
 			"</tr>"+
 			"</table>"+
 			"</div>"+
+			 "<div class='spinner'>"+
+			  "<div class='bounce1'></div>"+
+			" <div class='bounce2'></div>"+
+			  "<div class='bounce2'></div></div>"+
 			"<div class='upload_process_bar'>"+  
 			"<div class='upload_current_process'></div>"+ 
 			"<div id='process_info'></div>"+ 
 	"</div>");
 	$(".right").hide();
 	$("#mainPage").show();
+	   $('.spinner').hide();
 	 $("#cjz").click(function(){
 	    	newUser2(addIntopiece);
 	    })
@@ -1279,6 +1321,7 @@ function dcmbadd(addIntopiece){
 	    });  
 	}, false); 
 	  $("#sure").click(function(){
+		  $('.spinner').show();
 		  $("#sure").attr('disabled',"true");
 			 var fileURI = document.getElementsByName("imageuri")[0].getAttribute("uri");
 			 var fileName = $("#fcz_sheet1").val();
@@ -1586,6 +1629,7 @@ function uploadProcessing(progressEvent){
  * @param r 
  */ 
 function uploadSuccess(r) { 
+	 $('.spinner').hide();
 	var objjs;
 	var obj = $.evalJSON(r.response);
 	if(obj.success==false){
@@ -1630,7 +1674,7 @@ function uploadSuccess1(r) {
     $("#sure").attr('disabled',false);
 	}
 	}else{
-		alert("oooooyeah！");
+		alert("上传成功！");
 		if(phoneTYPE==1){
 			capture("qtyxzl_sheet1","img","imageuri","1","1");
 		}else if(phoneTYPE==2){
@@ -1994,6 +2038,10 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 										"<td style='background:#f26d6e;border:none;color:#fff;'>建议额度<font class='pf' id='jyed'>0</font></td>"+   
 			                        "</tr>"+
 			                    "</table>"+
+			                    "<div class='spinner'>"+
+				      			  "<div class='bounce1'></div>"+
+				      			" <div class='bounce2'></div>"+
+				      			  "<div class='bounce2'></div></div>"+
 								"<p>" +
 			                        "<input id='sure' type='button' class='btn btn-large btn-primary' value='确定'/>"+  
 			                    "</p>" +
@@ -2001,11 +2049,13 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 			                "</div>");
 			$(".right").hide();
 			$("#mainPage").show();
+			 $('.spinner').hide();
 			  $("#back").click(function(){
 				  dcmbadd(addIntopiece) ;
 			  })
 			    $("#sure").click(function(){
-			    	 $("#sure").attr('disabled',"true");
+			    	 $('.spinner').show();
+			    	 $("#sure").attr('disabled',true);
 			    	var chinesename=allobj.chineseName
 			    	var cardid=allobj.cardId;
 			    	var khdysr=$("#khdysr").val();
@@ -2015,8 +2065,10 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 			   	pfdj=pfdj;
 			   	if(cykh!="0" && cykh!="1"){
 			   		alert('是否属于超优客户只能是1或者0');
+			   	 $("#sure").attr('disabled',false);
 			   	}else if(khjlzgyx>15){
 			   		alert('客户经理主观印象分数只能在0-15之间');
+			   	 $("#sure").attr('disabled',false);
 			   	}else if(chinesename=="" ||chinesename==null ||
 			   			cardid=="" ||cardid==null ||
 			   			khdysr=="" ||khdysr==null ||
@@ -2039,6 +2091,7 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 			   			syrk=="" ||syrk==null ||
 			   			tjr=="" ||tjr==null){
 			   		alert('请填写完整的信息!!!');
+			   	 $("#sure").attr('disabled',false);
 			   	    }else{
 			   	    	
 			    	var edpgUrl="/ipad/addCustomerApprais.json";
@@ -2056,6 +2109,7 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 								tosqjj(allzi);
 							}else{
 								alert('上传失败!');
+								 $('.spinner').hide();
 								pglr(allobj);
 							}
 							
@@ -2148,7 +2202,9 @@ $("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>�
 			    		dataType:'json',
 			    		data:{productId:allzi.productId,userId:userId,customerId:allzi.customerId},
 			    		success: function (json) {
+			    			
 			    			obj = $.evalJSON(json);
 			    			alert(obj.message);
+			    			$('.spinner').hide();
 			    			myjjgl();
 			    		}})}
