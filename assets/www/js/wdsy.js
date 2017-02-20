@@ -1,6 +1,7 @@
 var mrtz;
 //我的首页
 function mywdsy(){
+	hktx();
 	window.scrollTo(0,0);//滚动条回到顶端
 //	alert("GET当前登录用户ID："+window.sessionStorage.getItem("userId"));
 	var get = crud.dom.factory("GET");
@@ -808,7 +809,12 @@ function khyyzk(){
 function ckqttjt(){
 	var a=window.sessionStorage.getItem("qxckUser");
 	var zs = $.evalJSON(a);
-	$("#mainPage").html("");
+	$("#mainPage").html("<div class='spinner'>"+
+				  "<div class='bounce1'></div>"+
+				" <div class='bounce2'></div>"+
+				  "<div class='bounce2'></div></div>");
+	 $("#mainPage").show();
+	    $('.spinner').show();
 	var url = "/ipad/tongji.json";
 	var custormerid1="";
 	$.ajax({
@@ -818,7 +824,7 @@ function ckqttjt(){
 		data:{userId:window.sessionStorage.getItem("userId")},
 		success: function (json) {
 		var objs = $.evalJSON(json);
-		
+		   $('.spinner').hide();
 			var yxze=objs.yxze;
 			var yqze=objs.yqze;
 			var buliang=0;
@@ -1106,17 +1112,17 @@ function tz(){
 				"<span class='tz_message'>客户申款成功通知</span>" +
 				"</td>"+ 
 				"</tr>"+
-				/*"<tr>"+ tgkhlb()                        
-				"<td onclick='hmdtz()'>" +
+				"<tr>"+                    
+		/*		"<td onclick='hmdtz()'>" +
 				"<img src='images/cs.png'/><br/><span class='tongzhi'>"+objs.blackcount+"</span><br/>" +
 				"<span class='tz_message'>黑名单客户通知</span>" +
-				"</td>"+                    
+				"</td>"+  */                  
 				"<td id='kkkk'>" +
-				"<img src='images/khzlbg.png'/><br/><span class='tongzhi'>"+objs.ziliaobiangeng+"</span><br/>" +
-				"<span class='tz_message'>客户资料变更通知</span>" +
+				"<img src='images/khzlbg.png'/><br/><span class='tongzhi'>"+mrtz.ysUpdateCount+"</span><br/>" +
+				"<span class='tz_message'>客户基本信息维护通知</span>" +
 				"</td>"+                  
 				"<td></td>"+ 
-				"</tr>"+*/
+				"</tr>"+
 				"</table>"+
 		"</div>");
 		  $("#back").click(function(){
@@ -1124,13 +1130,12 @@ function tz(){
 			  mywdsy();
 		  });
 		$("#kkkk").click(function(){
-			khzlbgtz(objs.bianggeng);
+			khzlbgtz();
 		})
 	
 	$(".right").hide();
 	$("#mainPage").show();
 }
-
 //通知-审贷会通知
 function hmdtz(){
 	var userId = window.sessionStorage.getItem("userId");
@@ -1294,7 +1299,7 @@ $.ajax({
 			"<p>"+
 			"<input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
 			"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
-			//"<input type='button' class='btn btn-large btn-primary' value='显示' id = 'sqsave'/>"+
+			//"<input type='button' class='btn btn-large btn-primaryvalue' ='显示' id = 'sqsave'/>"+
 	"</div>");
 	$(".right").hide();
 	$("#mainPage").show();  $("#xyy").click(function(){
@@ -1678,7 +1683,8 @@ function cskhtz(){
 	$("#mainPage").show();
 }
 //通知-客户资料变更通知
-function khzlbgtz(customerInfo){
+function khzlbgtz(){
+	var rbxgurl="/ipad/user/updateCustormerInfo.json";
 	var tmp ="";
 	var result={};
 	var page=1;
@@ -1686,35 +1692,36 @@ function khzlbgtz(customerInfo){
 	var head =	"<tr>"+  
 	"<th></th>"+
 	"<th>客户姓名</th>"+
-	"<th>证件类型</th>"+
 	"<th>证件号码</th>"+
 	"<th>手机</th>"+
-	"<th>状态</th>"+
+	"<th>家庭电话</th>"+
+	"<th>户籍地址</th>"+
+	"<th>家庭住址</th>"+
+	"<th>创建时间</th>"+
+	"<th>修改时间</th>"+
 	"</tr>"; 
-	for(var i=0;i<customerInfo.length;i++){
-		if(customerInfo[i].cardtype=="0"){
-			customerInfo[i].cardtype="身份证";
-		}else if(customerInfo[i].cardtype=="1"){
-			customerInfo[i].cardtype="军官证";
-		}else if(customerInfo[i].cardtype=="2"){
-			customerInfo[i].cardtype="护照";
-		}else if(customerInfo[i].cardtype=="3"){
-			customerInfo[i].cardtype="香港身份证";
-		}else if(customerInfo[i].cardtype=="4"){
-			customerInfo[i].cardtype="澳门身份证";
-		}else if(customerInfo[i].cardtype=="5"){
-			customerInfo[i].cardtype="台湾身份证";
-		}
-		if(customerInfo[i].islook==null||customerInfo[i].islook==""){
-			customerInfo[i].islook="未查看"
-		}
-		tmp=tmp+"<tr onclick='check(this)'><td><span class='radio'> <input type='radio' name='checkbox' value='"+customerInfo[i].id+"@"+
-		customerInfo[i].cardnum+"'/>"+"</span></td>"+  
-		"<td>"+customerInfo[i].cname+"</td>"+
-		"<td>"+customerInfo[i].cardtype+"</td>"+
-		"<td>"+customerInfo[i].cardnum+"</td>"+
-		"<td>"+customerInfo[i].contactmobiletel+"</td>"+
-		"<td>"+customerInfo[i].islook+"</td>"+
+	$.ajax({
+		url:wsHost+rbxgurl,
+		dateType:'json',
+		type:'GET',
+		//是否异步		
+		//			async:false,
+		data:{
+			userId:window.sessionStorage.getItem("userId"),
+		},
+		success:function (json){
+			var obj = $.evalJSON(json);
+			
+	for(var i=0;i<obj.size;i++){
+		tmp=tmp+"<tr onclick='check(this)'><td><span class='radio'> <input type='radio' name='checkbox' value='"+obj.result[i].userId+"'/>"+"</span></td>"+  
+		"<td>"+obj.result[i].chineseName+"</td>"+
+		"<td>"+obj.result[i].cardId+"</td>"+
+		"<td>"+obj.result[i].telephone+"</td>"+
+		"<td>"+obj.result[i].homePhone+"</td>"+
+		"<td>"+obj.result[i].mail+"</td>"+
+		"<td>"+obj.result[i].residentialAddress+"</td>"+
+		"<td>"+obj.result[i].createtime1+"</td>"+
+		"<td>"+obj.result[i].updatetime+"</td>"+
 		"</tr>"
 
 		if((i+1)%5==0){
@@ -1728,27 +1735,11 @@ function khzlbgtz(customerInfo){
 	$("#mainPage").html("<div class='title'><img src='images/back.png' onclick='tz()'/>通知-客户资料变更通知</div>"+  
 			"<div class='content'>" +
 			"<table id='cslb' class='cpTable' style='text-align:center;'>"+
-//			"<tr>"+                        
-//			"<th>序号</th>"+  
-//			"<th>客户姓名</th>"+
-//			"<th>客户身份标识</th>"+
-//			"<th>产品标识</th>"+
-//			"<th>变更项</th>"+
-//			"<th>是否变更维护计划</th>"+
-//			"</tr>"+
-//			"<tr>"+    
-//			"<td>1</td>"+
-//			"<td></td>"+
-//			"<td></td>"+
-//			"<td></td>"+
-//			"<td></td>"+
-//			"<td></td>"+
-//			"</tr>"+
 			head +result[page]+
 			"</table>"+
 			"<p><input type='button' class='btn btn-large btn-primary' value='上一页' id = 'syy' />"+
 			"<input type='button' class='btn btn-large btn-primary' value='下一页' id = 'xyy'/>"+
-			"<input type='button' class='btn btn-large btn-primary' value='标记为查看' id = 'bjck'/>"+
+			"<input type='button' class='btn btn-large btn-primary' value='查看客户原始信息' id = 'bjck'/>"+
 			"<input type='button' class='btn btn-large'' value='返回' onclick='tz()'/></p>"+
 	"</div>");
 	$(".right").hide();
@@ -1775,24 +1766,152 @@ function khzlbgtz(customerInfo){
 	$("#bjck").click(function(){
 		if ($("input[type='radio']").is(':checked')) {
 			var values =$('input[name="checkbox"]:checked').attr("value").split("@");
-		var chakanurl="/ipad/custAppInfo/changestate.json";
+		var chakanurl="/ipad/user/selectCustormerInfo.json";
 		$.ajax({
 			url:wsHost+chakanurl,
 			type: "GET",
 			dataType:'json',
 			data:{
 				id:values[0],
-				cardId:values[1],
 			},
 			success: function (json){
 				var obj = $.evalJSON(json);
-				alert(obj.mess);
-				tz();
+				if(obj.result.xb==1){
+					obj.result.xb='男';
+				}else{
+					obj.result.xb='女';
+				}
+				
+				if(obj.result.hyzk==0){
+					obj.result.hyzk='未婚';
+				}else if(obj.result.hyzk==1){
+					obj.result.hyzk='已婚';
+				}else if(obj.result.hyzk==2){
+					obj.result.hyzk='丧偶';
+				}else if(obj.result.hyzk==3){
+					obj.result.hyzk='离婚';
+				}
+				
+				
+				if(obj.result.xl==4){
+					obj.result.xl='中等专业或技术学校';
+				}else if(obj.result.xl==1){
+					obj.result.xl='研究生';
+				}else if(obj.result.xl==2){
+					obj.result.xl='大学本科';
+				}else if(obj.result.xl==3){
+					obj.result.xl='大学本科或者专科学校';
+				}else if(obj.result.xl==5){
+					obj.result.xl='高中';
+				}else if(obj.result.xl==6){
+					obj.result.xl='初中';
+				}else if(obj.result.xl==7){
+					obj.result.xl='小学';
+				}else if(obj.result.xl==8){
+					obj.result.xl='文盲或半文盲';
+				}else if(obj.result.xl==9){
+					obj.result.xl='未知';
+				}
+				
+				
+				if(obj.result.xw==0){
+					obj.result.xw='博士';
+				}else if(obj.result.xw==1){
+					obj.result.xw='名誉博士';
+				}else if(obj.result.xw==2){
+					obj.result.xw='硕士';
+				}else if(obj.result.xw==3){
+					obj.result.xw='学士';
+				}else if(obj.result.xw==4){
+					obj.result.xw='其他';
+				}else if(obj.result.xw==5){
+					obj.result.xw='无';
+				}else if(obj.result.xw==6){
+					obj.result.xw='未知';
+				}
+				$("#mainPage").html("<div class='title'><img src='images/back.png' id='back'/>客户原始信息</div>"+  
+						"<div class='content'>" +
+						"<table class='cpTable khjbxx' style='margin-top:20px;'>"+
+						"<tr>"+                        
+						"<th colspan='4'>客户原始信息</th>"+  
+						"</tr>"+
+						"<tr>"+
+						"<th>客户名称：</th>"+
+						"<td><input type ='text' value='"+obj.result.khmc+"' readonly = 'true'>"+
+						"</td>"+
+						"<th>证件号码：</th>"+
+						"<td><input type ='text' value='"+obj.result.zjhm+"' readonly = 'true'>"+
+						"</td>"+
+						"</tr>"+
+						"<tr>"+
+						"<th>性别：</th>"+
+						"<td><input type = 'text' value='"+obj.result.xb+"' readonly = 'true'></td>"+
+						"<th>民族：</th>"+
+						"<td><input type ='text' value='"+obj.result.mz+"' readonly = 'true'>"+
+						"</td>"+
+						"</tr>"+
+						"<tr>"+
+						"<th>婚姻状况：</th>"+
+						"<td><input type ='text' value='"+obj.result.hyzk+"' readonly = 'true'>"+
+						"</td>"+
+						"<th>出生日期：</th>"+
+						"<td><input type ='text' value='"+obj.result.csrq+"' readonly = 'true'>"+
+						"</td>"+
+						"</tr>"+
+						"<tr>"+
+						"<th>家庭地址：</th>"+
+						"<td><input type='text' id='sxqj' value='"+obj.result.xxdz+"' readonly = 'true'/>"+
+						"</td>"+
+						"<th>户籍地址：</th>"+
+						"<td><input type = 'text' value='"+obj.result.hjdz+"' readonly = 'true'></td>"+
+						"</tr>"+
+						"<tr>"+
+						"<th>个体商户名称：</th>"+
+						"<td><input type='text' id='sxqj' value='"+obj.result.gtspmc+"' readonly = 'true'/>"+
+						"</td>"+
+						"<th>是否户主：</th>"+
+						"<td><input type = 'text' value='"+obj.result.sfhz+"' readonly = 'true'></td>"+
+						"</tr>"+
+						"<tr>"+
+						"<th>手机</th>"+
+						"<td><input id='decisionRate' value='"+obj.result.sj+"' type='text' name='decision_rate'/>"+
+						"</td>"+
+						"<th>家庭电话：</th>"+
+						"<td><input type = 'text' value='"+obj.result.jtdh+"' readonly = 'true'></td>"+
+						"</tr>"+
+						"<tr>"+
+						"<th>信用等级：</th>"+
+						"<td><input type = 'text' value='"+obj.result.xydj+"' readonly = 'true'></td>"+
+						"<th>住房到期期限：</th>"+
+						"<td><input type = 'text' value='"+obj.result.dqrq+"' readonly = 'true'></td>"+
+						"</tr>"+
+						
+						"<tr>"+
+						"<th>学历：</th>"+
+						"<td><input type = 'text' value='"+obj.result.xl+"' readonly = 'true'></td>"+
+						"<th>学位：</th>"+
+						"<td><input type = 'text' value='"+obj.result.xw+"' readonly = 'true'></td>"+
+						"</tr>"+
+						
+						"</table>"+
+						"<p>" +
+						"<input type='button' class='btn btn-large' value='返回' id='backk'/>" +
+						"</p>"+
+				"</div>");
+				$(".right").hide();
+				$("#mainPage").show();
+				$("#backk").click(function(){
+					khzlbgtz();
+				})
+				$("#back").click(function(){
+					khzlbgtz();
+				})
 			}
 		})
 	}else{
 		alert("请选择一行");
 	}
+	})	}
 	})
 }
 

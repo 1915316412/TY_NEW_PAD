@@ -128,6 +128,7 @@ function hktx(){//显示登出提示
                         "</div>"+
                     "</div><!-- /display-div -->");
     $("#text1").animate({top:"0px"},"500");
+    $("#text1").show();
     $("#hktx").click(function(){
     	  $("#text1").hide();
     })
